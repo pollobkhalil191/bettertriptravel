@@ -1,9 +1,7 @@
 // src/app/layout.tsx
-"use client"; // Ensure client-side rendering for components with hooks
-
-import Header from './components/Header';
-import './globals.css'; // Global CSS or Tailwind CSS
-import 'tailwindcss/tailwind.css'
+import './globals.css'; // Ensure global styles are imported
+import 'tailwindcss/tailwind.css';
+import Header from './components/Header'; // Correct import path for Header
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

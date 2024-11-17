@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
+import daisyui from "daisyui";  // Import daisyui using ES module syntax
 
-export default {
+const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,12 +12,16 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: 'var(--primary-color)', // Add primary color
+        secondary: 'var(--secondary-color)', // Add secondary color
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
-        body: ['Roboto', 'sans-serif'],
+        sans: ['Poppins'],
+        body: ['Roboto'],
       },
     },
   },
-  plugins: [],
-} satisfies Config;
+  plugins: [daisyui],  // Use imported daisyui here
+};
+
+export default config;
