@@ -14,8 +14,14 @@
   }
 }
 
+html {
+  font-family: 'Roboto', sans-serif;  /* Set Roboto as the default for body text */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;  /* Set Poppins for all heading tags */
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', sans-serif;  /* Ensure body text uses Roboto */
 }
