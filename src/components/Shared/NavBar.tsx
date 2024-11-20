@@ -12,7 +12,7 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="navbar bg-base-100 shadow-md px-4">
+    <nav className="navbar bg-base-100  shadow-md px-24">
       {/* Logo Section */}
       <div className="navbar-start">
         <a className="text-xl font-bold">MyLogo</a>
@@ -25,7 +25,7 @@ export default function NavBar() {
               className="w-full pl-12 pr-28 py-4 border border-gray-300 rounded-full"
               placeholder="Search..."
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-blue-500 text-white rounded-full mx-2">
+            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full mx-2">
               Search
             </button>
           </div>

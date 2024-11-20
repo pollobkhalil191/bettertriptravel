@@ -42,7 +42,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 px-24">
       {/* Hero Section */}
       <section className="relative bg-gray-900 text-white text-center py-20">
         <h1 className="text-4xl font-bold">Discover Your Next Adventure</h1>
