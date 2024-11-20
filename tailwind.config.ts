@@ -16,11 +16,13 @@ export default {
   },
   plugins: [
     require('daisyui'),
+    
   ],
+
   daisyui: {
     themes: [
       {
-        betterTrip: {
+        'betterTrip': {
           "primary": "#001C3F",
           "secondary": "#f6d860",
           "accent": "#37cdbe",
