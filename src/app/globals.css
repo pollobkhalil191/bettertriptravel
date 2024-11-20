@@ -5,27 +5,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary-color: #FEF35B;  /* Primary color */
-  --secondary-color: #001C3F; /* Secondary color */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --primary-color: #FEF35B;  /* Optional: Override if different in dark mode */
-    --secondary-color: #001C3F; /* Optional: Override if different in dark mode */
   }
 }
 
-html {
-  font-family: 'Roboto'; /* Set Roboto as the default for body text */
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins'; /* Set Poppins for all heading tags */
-}
-
 body {
-  font-family: 'Roboto'; /* Ensure body text uses Roboto */
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
 }

@@ -1,10 +1,7 @@
-// next.config.ts
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Remove 'appDir': This is now the default behavior
-  },
+  /* config options here */
 };
 
 export default nextConfig;
