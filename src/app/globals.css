@@ -19,3 +19,14 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff; /* Change to desired background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for sticky effect */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+  z-index: 1111;
+}
+

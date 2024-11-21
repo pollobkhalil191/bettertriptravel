@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { useState } from "react";
+import Image from "next/image";
+import React, { useState, useRef } from "react";
 import {
   FaArrowRight,
   FaLeaf,
@@ -9,11 +9,12 @@ import {
   FaUtensils,
   FaFutbol,
   FaChevronLeft,
-  FaChevronRight
+  FaChevronRight,
 } from "react-icons/fa";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("nature");
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
     { id: "nature", label: "Nature", icon: <FaLeaf /> },
@@ -41,16 +42,29 @@ export default function HomePage() {
     { id: 3, name: "Mount Fuji", image: "/fuji.jpg" },
   ];
 
+  const handleSlider = (direction: "left" | "right") => {
+    if (sliderRef.current) {
+      const scrollAmount = direction === "left" ? -300 : 300;
+      sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="space-y-10 px-24">
+    <div className="space-y-10  sm:">
       {/* Hero Section */}
-      <section className="relative bg-gray-900 text-white text-center py-20">
-        <h1 className="text-4xl font-bold">Discover Your Next Adventure</h1>
-        <p className="mt-4 text-lg">Find amazing tours, destinations, and experiences.</p>
-        <button className="mt-6 inline-flex items-center px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-          Learn More <FaArrowRight className="ml-2" />
-        </button>
-      </section>
+      <section
+  className="relative bg-gray-900 text-white text-center py-20 bg-cover bg-center"
+  style={{ backgroundImage: "url('https://i.ibb.co.com/q11VRrt/BM24-HP-DESKTOP-011-right.webpg')" }}
+>
+  <div className="bg-black bg-opacity-50 absolute inset-0"></div> {/* Optional overlay */}
+  <div className="relative z-10">
+    <h1 className="text-4xl items-start justify-start font-bold">Discover Your Next Adventure</h1>
+    <p className="mt-4 text-lg">Find amazing tours, destinations, and experiences.</p>
+    <button className="mt-6 inline-flex items-center px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+      Learn More <FaArrowRight className="ml-2" />
+    </button>
+  </div>
+</section>
 
       {/* Tab Section */}
       <section>
@@ -81,15 +95,24 @@ export default function HomePage() {
 
       {/* Sports Slider Section */}
       <section className="space-y-4 px-4">
-        <h2 className="text-2xl font-bold text-center">Top sports sights you can't miss</h2>
+        <h2 className="text-2xl font-bold text-center">Top sports sights you cant miss</h2>
         <div className="relative">
-          <div className="flex items-center overflow-x-scroll scrollbar-hide gap-4">
+          <div
+            ref={sliderRef}
+            className="flex items-center overflow-x-scroll scrollbar-hide gap-4"
+          >
             {destinations.map((destination) => (
-              <div key={destination.id} className="min-w-[250px] flex-shrink-0 rounded-lg shadow">
-                <img
+              <div
+                key={destination.id}
+                className="min-w-[250px] flex-shrink-0 rounded-lg shadow"
+              >
+                <Image
                   src={destination.image}
                   alt={destination.name}
-                  className="h-40 w-full object-cover rounded-t-lg"
+                  width={300}
+                  height={200}
+                  layout="responsive"
+                  className="rounded-t-lg"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-bold">{destination.name}</h3>
@@ -98,10 +121,16 @@ export default function HomePage() {
             ))}
           </div>
           {/* Slider Arrows */}
-          <button className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow">
+          <button
+            onClick={() => handleSlider("left")}
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow"
+          >
             <FaChevronLeft />
           </button>
-          <button className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow">
+          <button
+            onClick={() => handleSlider("right")}
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow"
+          >
             <FaChevronRight />
           </button>
         </div>
@@ -116,10 +145,13 @@ export default function HomePage() {
               key={destination.id}
               className="relative group overflow-hidden rounded-lg shadow-lg"
             >
-              <img
+              <Image
                 src={destination.image}
                 alt={destination.name}
-                className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                width={400}
+                height={300}
+                layout="responsive"
+                className="transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black to-transparent">
                 <h3 className="text-lg font-bold text-white">{destination.name}</h3>
