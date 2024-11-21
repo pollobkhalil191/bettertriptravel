@@ -1,26 +1,20 @@
 "use client";
 
-import Image from "next/image";
 import React, { useState, useRef } from "react";
-import {
-  FaArrowRight,
-  FaLeaf,
-  FaLandmark,
-  FaUtensils,
-  FaFutbol,
-  FaChevronLeft,
-  FaChevronRight,
-} from "react-icons/fa";
+import { FaArrowRight, FaLeaf, FaLandmark, FaUtensils, FaFutbol, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import Image from "next/image";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("nature");
   const sliderRef = useRef<HTMLDivElement>(null);
-
+ 
+ 
+  // Tabs with dynamic hero backgrounds
   const tabs = [
-    { id: "nature", label: "Nature", icon: <FaLeaf /> },
-    { id: "culture", label: "Culture", icon: <FaLandmark /> },
-    { id: "food", label: "Food", icon: <FaUtensils /> },
-    { id: "sports", label: "Sports", icon: <FaFutbol /> },
+    { id: "nature", label: "Nature", icon: <FaLeaf />, bg: "https://i.ibb.co.com/q11VRrt/BM24-HP-DESKTOP-011-right.webp/BM24-HP-DESKTOP-011-right.webp" },
+    { id: "culture", label: "Culture", icon: <FaLandmark />, bg: " https://i.ibb.co.com/n675kkY/BM24-HP-DESKTOP-008.webp" },
+    { id: "food", label: "Food", icon: <FaUtensils />, bg: "https://i.ibb.co.com/QkFYjQG/BCS-2024-Paris-Bakery-Homepage-Desktop.webp " },
+    { id: "sports", label: "Sports", icon: <FaFutbol />, bg: "https://i.ibb.co.com/Jzc9KNH/BM24-Desktop-Oahu.webp" },
   ];
 
   const tourCards = [
@@ -50,42 +44,43 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-10  sm:">
+    <div>
       {/* Hero Section */}
       <section
-  className="relative bg-gray-900 text-white text-center py-20 bg-cover bg-center"
-  style={{ backgroundImage: "url('https://i.ibb.co.com/q11VRrt/BM24-HP-DESKTOP-011-right.webpg')" }}
->
-  <div className="bg-black bg-opacity-50 absolute inset-0"></div> {/* Optional overlay */}
-  <div className="relative z-10">
-    <h1 className="text-4xl items-start justify-start font-bold">Discover Your Next Adventure</h1>
-    <p className="mt-4 text-lg">Find amazing tours, destinations, and experiences.</p>
-    <button className="mt-6 inline-flex items-center px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-      Learn More <FaArrowRight className="ml-2" />
-    </button>
-  </div>
-</section>
-
-      {/* Tab Section */}
-      <section>
-        <div className="tabs flex justify-center gap-6 mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${
-                activeTab === tab.id ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+        className="relative  text-white text-center h-[80vh] bg-cover bg-center"
+        style={{ backgroundImage: `url(${tabs.find((tab) => tab.id === activeTab)?.bg})` }} // Dynamically change the hero background
+      >
+        <div className="bg-black bg-opacity-50 absolute inset-0"></div>
+        <div className="relative  flex flex-col justify-center items-center h-full">
+          <h1 className="text-4xl font-bold">Discover Your Next Adventure</h1>
+          <p className="mt-4 text-lg">Find amazing tours, destinations, and experiences.</p>
+          <button className="mt-6 inline-flex items-center px-6 py-3 text-lg bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+            Learn More <FaArrowRight className="ml-2" />
+          </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+        <div className="-mt-14 z-10 left-0 w-full flex justify-center  relative">
+  {tabs.map((tab) => (
+    <button
+      key={tab.id}
+      onClick={() => setActiveTab(tab.id)}
+      className={`flex items-center  px-24 py-4 rounded-md text-2xl font-bold  ${
+        activeTab === tab.id ? "bg-white text-black" : " text-white"
+      }`}
+    >
+      {tab.icon} {tab.label}
+    </button>
+  ))}
+</div>
+
+      </section>
+
+      {/* Tab Content Section */}
+      <section className="bg-white    py-10 px-5 lg:px-20">
+        <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tourCards
             .filter((card) => card.tab === activeTab)
             .map((card) => (
-              <div key={card.id} className="p-6 border rounded-lg shadow">
+              <div key={card.id} className="p-6 border rounded-md shadow">
                 <h3 className="text-xl font-bold">{card.title}</h3>
                 <p>{card.description}</p>
               </div>
@@ -97,15 +92,9 @@ export default function HomePage() {
       <section className="space-y-4 px-4">
         <h2 className="text-2xl font-bold text-center">Top sports sights you cant miss</h2>
         <div className="relative">
-          <div
-            ref={sliderRef}
-            className="flex items-center overflow-x-scroll scrollbar-hide gap-4"
-          >
+          <div ref={sliderRef} className="flex items-center overflow-x-scroll scrollbar-hide gap-4">
             {destinations.map((destination) => (
-              <div
-                key={destination.id}
-                className="min-w-[250px] flex-shrink-0 rounded-lg shadow"
-              >
+              <div key={destination.id} className="min-w-[250px] flex-shrink-0 rounded-lg shadow">
                 <Image
                   src={destination.image}
                   alt={destination.name}
@@ -120,7 +109,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          {/* Slider Arrows */}
           <button
             onClick={() => handleSlider("left")}
             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow"
