@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { 
@@ -26,14 +26,12 @@ export default function NavBar() {
     setIsProfileOpen(false); // Close popup on option click
   };
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen); // Toggle the menu visibility
+
   // Detect scroll and update sticky header state
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100) { // If the user scrolls down 100px
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
+      setIsSticky(window.scrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -44,14 +42,29 @@ export default function NavBar() {
     };
   }, []);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen); // Toggle the menu visibility
+  // Dynamic menu items
+  const menuItems = [
+    { title: "Home", path: "/" },
+    { title: "About Us", path: "/about" },
+    { title: "Tours", path: "/tour" },
+    { title: "Contact", path: "/contact" },
+    { title: "Blog", path: "/blog" },
+  ];
 
   return (
     <nav className={`navbar bg-base-100 shadow-md px-5 lg:px-20 ${isSticky ? 'sticky-header' : ''}`}>
       {/* Logo Section */}
       <div className="navbar-start flex justify-between items-center w-full">
-        <a className="text-xl font-bold">MyLogo</a>
-        
+        <Link href="/">
+          <Image 
+            src="/assets/logo.png" 
+            alt="Logo" 
+            width={60} 
+            height={50} 
+            className="cursor-pointer" 
+          />
+        </Link>
+
         {/* Hamburger Icon for Mobile */}
         <button 
           className="lg:hidden text-2xl"
@@ -79,10 +92,13 @@ export default function NavBar() {
       {/* Menu Section (Desktop) */}
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          {["Home", "About", "Tour", "Contact"].map((menu) => (
-            <li className="group relative" key={menu}>
-              <Link href="/" className="flex flex-col items-center text-gray-700 hover:text-blue-500">
-                {menu}
+          {menuItems.map((item, index) => (
+            <li className="group relative" key={index}>
+              <Link
+                href={item.path}
+                className="flex flex-col items-center text-gray-700 hover:text-blue-500"
+              >
+                {item.title}
                 <span className="block h-0.5 w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
@@ -160,31 +176,26 @@ export default function NavBar() {
       {isMenuOpen && (
         <div className="lg:hidden fixed top-0 left-0 w-full h-full bg-white z-50">
           <div className="flex justify-between p-6">
-            <a className="text-xl font-bold">MyLogo</a>
+            <Link href="/" className="text-xl font-bold">
+              MyLogo
+            </Link>
             <button onClick={toggleMenu} className="text-2xl">
               <FaTimes />
             </button>
           </div>
 
           <ul className="space-y-4 p-6">
-            {["Home", "About", "Tour", "Contact"].map((menu) => (
-              <li key={menu}>
-                <Link href="/" className="text-xl text-gray-700 hover:text-blue-500" onClick={toggleMenu}>
-                  {menu}
+            {menuItems.map((item, index) => (
+              <li key={index}>
+                <Link
+                  href={item.path}
+                  className="text-xl text-gray-700 hover:text-blue-500"
+                  onClick={toggleMenu}
+                >
+                  {item.title}
                 </Link>
               </li>
             ))}
-            <li className="flex justify-center gap-6 mt-6">
-              <button className="text-lg">
-                <FaHeart />
-              </button>
-              <button className="text-lg">
-                <FaShoppingCart />
-              </button>
-              <button className="text-lg">
-                <FaUser />
-              </button>
-            </li>
           </ul>
         </div>
       )}
