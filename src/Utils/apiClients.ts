@@ -20,5 +20,12 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+
+
+export const fetchHomePageData = async () => {
+  const response = await api.get("/home-page");
+  return response.data;
+};
+
 // Export the client
 export default apiClient;

@@ -46,7 +46,7 @@ export default function NavBar() {
   const menuItems = [
     { title: "Home", path: "/" },
     { title: "About Us", path: "/about" },
-    { title: "Tours", path: "/tour" },
+    { title: "Tours", path: "/Tours" },
     { title: "Contact", path: "/contact" },
     { title: "Blog", path: "/blog" },
   ];
@@ -96,10 +96,10 @@ export default function NavBar() {
             <li className="group relative" key={index}>
               <Link
                 href={item.path}
-                className="flex flex-col items-center text-gray-700 hover:text-blue-500"
+                className="flex flex-col items-center hover:bg-white text-gray-700 hover:text-primary active:bg-transparent"
               >
                 {item.title}
-                <span className="block h-0.5 w-0 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                <span className="block h-0.5 w-0 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
           ))}

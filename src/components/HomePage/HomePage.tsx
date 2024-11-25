@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import { FaArrowRight, FaLeaf, FaLandmark, FaUtensils, FaFutbol, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Image from "next/image";
 import TourCard from "../cards/TourCard";
+import Destination from "./Destination";
 
 export const metadata: Metadata = {
   title: "Home | Better-Trip-Travel",
@@ -87,32 +88,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sports Slider Section */}
-      <section className="space-y-4 px-4">
-        <h2 className="text-2xl font-bold text-center">Top sports sights you cant miss</h2>
-        <div className="relative">
-          <div ref={sliderRef} className="flex items-center overflow-x-scroll scrollbar-hide gap-4 scroll-smooth">
-            {destinations.map((destination) => (
-              <div key={destination.id} className="flex-shrink-0 w-80 h-60 relative">
-                <Image src={destination.image} alt={destination.name} layout="fill" objectFit="cover" className="rounded-md" />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black text-white p-3">
-                  {destination.name}
-                </div>
-              </div>
-            ))}
-          </div>
-          <button onClick={() => handleSlider("left")} className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-            <FaChevronLeft />
-          </button>
-          <button onClick={() => handleSlider("right")} className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">
-            <FaChevronRight />
-          </button>
-        </div>
-      </section>
+   
+            <div>
+              
 
+
+            </div>
+            <Destination/>
             
 
-              <TourCard />
+          
             
 
     </div>

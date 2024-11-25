@@ -30,3 +30,9 @@ body {
   z-index: 1111;
 }
 
+/* Remove active background for menu items */
+.menu .menu-horizontal li a:active {
+  background-color: transparent !important;
+}
+
+
