@@ -24,35 +24,40 @@ interface Tour {
 }
 
 const Tours = () => {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [destinationId, setDestinationId] = useState<string | null>(null);
+  const [tours, setTours] = useState<Tour[]>([]); // Stores fetched tours
+  const [error, setError] = useState<string | null>(null); // Handles error state
+  const [destinationId, setDestinationId] = useState<string | null>(null); // Destination/location ID from query
   const [filters, setFilters] = useState({
     price: "",
     language: "",
     duration: "",
     time: "",
-  });
-  const [sort, setSort] = useState<string>("recommended");
-  const [filterPopup, setFilterPopup] = useState<boolean>(false);
+  }); // Filters state
+  const [sort, setSort] = useState<string>("recommended"); // Sorting state
+  const [filterPopup, setFilterPopup] = useState<boolean>(false); // Filter popup visibility
 
+  // Get `location_id` from query parameters
   useEffect(() => {
     const destinationQuery = new URLSearchParams(window.location.search).get("location_id");
     if (destinationQuery) {
-      setDestinationId(destinationQuery);
+      setDestinationId(destinationQuery); // Save `location_id` in state
     }
   }, []);
 
+  // Fetch tours when `destinationId` changes
   useEffect(() => {
     const fetchTours = async () => {
-      let allTours: Tour[] = [];
-      let page = 1;
-      let hasMore = true;
+      if (!destinationId) return; // Do nothing if destinationId is null
 
       try {
+        let allTours: Tour[] = [];
+        let page = 1;
+        let hasMore = true;
+
         while (hasMore) {
           const response = await apiClient.get("/tour/search", {
             params: {
+              location_id: destinationId, // Pass the location ID
               limit: 10,
               page: page,
             },
@@ -65,16 +70,17 @@ const Tours = () => {
           page++;
         }
 
-        setTours(allTours);
+        setTours(allTours); // Update state with fetched tours
       } catch (err: any) {
         console.error("Error fetching tours:", err.response || err);
-        setError("Failed to fetch tours");
+        setError("Failed to fetch tours"); // Handle errors
       }
     };
 
     fetchTours();
-  }, []);
+  }, [destinationId]); // Trigger fetchTours when destinationId changes
 
+  // Apply additional filters to fetched tours
   const filteredTours = tours.filter((tour) => {
     const matchesPrice = filters.price ? tour.sale_price === filters.price : true;
     const matchesLanguage = filters.language ? tour.title.includes(filters.language) : true;
@@ -178,45 +184,44 @@ const Tours = () => {
 
       {/* Tours Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-      {filteredTours.map((tour) => (
-  <Link href={`/tour/${tour.id}`} key={tour.id}>
-    <motion.div
-      className="tour-card bg-white rounded-lg overflow-hidden cursor-pointer"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-      <div className="relative">
-        <Image
-          width={500}
-          height={300}
-          src={tour.image}
-          alt={tour.title}
-          className="w-full h-48 object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
-        />
-        <div className="absolute top-2 right-2">
-          <HeartIcon className="w-6 h-6 text-white hover:text-red-500 transition-colors duration-300" />
-        </div>
-      </div>
-      <div className="p-4 border-2">
-        <p className="text-sm text-gray-500">
-          <Link href={`/Tours?location_id=${tour.location.id}`} className="text-blue-500 hover:underline">
-            {tour.location.name}
+        {filteredTours.map((tour) => (
+          <Link href={`/tour/${tour.id}`} key={tour.id}>
+            <motion.div
+              className="tour-card bg-white rounded-lg overflow-hidden cursor-pointer"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <div className="relative">
+                <Image
+                  width={500}
+                  height={300}
+                  src={tour.image}
+                  alt={tour.title}
+                  className="w-full h-48 object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+                <div className="absolute top-2 right-2">
+                  <HeartIcon className="w-6 h-6 text-white hover:text-red-500 transition-colors duration-300" />
+                </div>
+              </div>
+              <div className="p-4 border-2">
+                <p className="text-sm text-gray-500">
+                  <Link href={`/Tours?location_id=${tour.location.id}`} className="text-blue-500 hover:underline">
+                    {tour.location.name}
+                  </Link>
+                </p>
+                <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">{tour.title}</h3>
+                <div className="mt-2 space-y-1">
+                  <p className="text-sm text-gray-500">{tour.duration}</p>
+                  <p className="text-lg font-bold text-primary">
+                    From <span className="font-semibold">{tour.sale_price}</span>
+                    <span className="text-sm font-light"> per person</span>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </Link>
-        </p>
-        <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">{tour.title}</h3>
-        <div className="mt-2 space-y-1">
-          <p className="text-sm text-gray-500">{tour.duration}</p>
-          <p className="text-lg font-bold text-primary">
-            From <span className="font-semibold">{tour.sale_price}</span>
-            <span className="text-sm font-light"> per person</span>
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  </Link>
-))}
-
+        ))}
       </div>
     </div>
   );
