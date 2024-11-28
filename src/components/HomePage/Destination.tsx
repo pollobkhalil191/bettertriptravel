@@ -18,8 +18,6 @@ interface Location {
   image: string;
 }
 
-
-
 interface Tour {
   id: number;
   title: string;
@@ -35,8 +33,14 @@ interface ToursResponse {
 export default function Destination() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);  // State to track if client-side
   const sliderRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // This effect will run only on the client side
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const fetchDestinations = async () => {
@@ -76,6 +80,8 @@ export default function Destination() {
   }, []);
 
   const handleSlider = (direction: "left" | "right") => {
+    if (!isClient) return;  // Ensure the code runs only in the browser
+
     const cardWidth = 180; // Width of one card
     const visibleCards = window.innerWidth <= 768 ? 2 : 6; // For small screens, show 2 cards, for larger screens, show 6
     const totalCards = destinations.length;
@@ -100,14 +106,16 @@ export default function Destination() {
 
   const canScrollLeft = currentIndex > 0;
   const canScrollRight =
-    currentIndex + (window.innerWidth <= 768 ? 2 : 6) < destinations.length;
+    currentIndex + (isClient && window.innerWidth <= 768 ? 2 : 6) < destinations.length;
 
   const visibleDestinations = destinations.slice(
     currentIndex,
-    currentIndex + (window.innerWidth <= 768 ? 2 : 6)
+    currentIndex + (isClient && window.innerWidth <= 768 ? 2 : 6)
   );
 
   if (error) return <div>Error: {error}</div>;
+
+  if (!isClient) return null; // Return null until the client-side code is ready
 
   return (
     <section className="py-10 px-5 lg:px-20">
