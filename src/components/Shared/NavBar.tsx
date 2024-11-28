@@ -60,7 +60,7 @@ export default function NavBar() {
         isSticky ? "sticky-header" : ""
       }`}
     >
-      <div className="navbar-start flex justify-between items-center w-full">
+      <div className="navbar-start flex  items-center w-full">
         {/* Logo */}
         <Link href="/">
           <Image
@@ -73,7 +73,7 @@ export default function NavBar() {
         </Link>
 
         {/* Search Field */}
-        <div>
+        <div className="">
           <SearchField onSearch={handleSearch} /> {/* Pass handleSearch as onSearch prop */}
         </div>
 
@@ -83,13 +83,14 @@ export default function NavBar() {
         </button>
       </div>
 
-      {/* Centered Menu Items */}
-      <div className="navbar-center hidden lg:flex items-center gap-6">
+        {/* Menu and Icon */}
+      <div className="">
+         <div className="navbar-center  hidden lg:flex mr-16 gap-6">
         {menuItems.map((item, index) => (
           <Link
             key={index}
             href={item.path}
-            className="text-lg text-gray-700 hover:text-blue-500 relative group"
+            className="text-sm text-gray-700 hover:text-blue-500 relative group"
           >
             {item.title}
             <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
@@ -109,6 +110,11 @@ export default function NavBar() {
           <FaUser />
         </button>
       </div>
+      </div>
+
+
+      {/* Centered Menu Items */}
+     
 
       {/* Optionally show search results */}
       {searchResults.length > 0 && (
