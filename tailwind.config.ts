@@ -42,7 +42,7 @@ export default {
           "base-100": "#ffffff", // Ensure proper key usage
         },
       },
-      "dark",
+      
       "light",
     ] as const, // This ensures TypeScript correctly infers the types of the theme objects
   },

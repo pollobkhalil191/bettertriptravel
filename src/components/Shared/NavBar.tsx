@@ -1,37 +1,23 @@
-"use client";
+"use client"; // Mark this file as a client component
 
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  FaSearch,
-  FaHeart,
-  FaShoppingCart,
-  FaUser,
-  FaBars,
-  
-} from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaUser, FaBars } from "react-icons/fa";
+import SearchField from "../SearchFilter"; // Ensure the correct import
 
-// Define types
-interface Location {
-  id: number;
-  name: string;
-}
-
+// Define Tour type
 interface Tour {
   id: number;
   title: string;
-  description: string;
+  price: number;
 }
 
 export default function NavBar() {
   const [isSticky, setIsSticky] = useState(false); // Sticky header state
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
-  const [searchQuery, setSearchQuery] = useState(""); // Input value
-  const [locationResults, setLocationResults] = useState<Location[]>([]); // Filtered locations
-  const [tours, setTours] = useState<Tour[]>([]); // Tours data
   const [isProfileOpen, setIsProfileOpen] = useState(false); // User profile popup state
+  const [searchResults, setSearchResults] = useState<Tour[]>([]); // Initialize searchResults with an empty array
 
   // Handle scroll for sticky header
   useEffect(() => {
@@ -44,45 +30,9 @@ export default function NavBar() {
     };
   }, []);
 
-  // Handle input change and fetch locations
-  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query.length > 2) {
-      try {
-        const response = await axios.get<{ locations: Location[] }>(
-          `https://btt.triumphdigital.co.th/api/locations?service_name=${query}`
-        );
-        setLocationResults(response.data.locations || []);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    } else {
-      setLocationResults([]);
-    }
-  };
-
-  // Fetch tours for a specific location
-  const handleSearch = async () => {
-    if (!searchQuery) return;
-
-    try {
-      const selectedLocation = locationResults.find(
-        (loc) => loc.name.toLowerCase() === searchQuery.toLowerCase()
-      );
-
-      if (selectedLocation) {
-        const response = await axios.get<{ tours: Tour[] }>(
-          `https://btt.triumphdigital.co.th/api/tour/search?location_id=${selectedLocation.id}`
-        );
-        setTours(response.data.tours || []);
-      } else {
-        alert("No matching location found!");
-      }
-    } catch (error) {
-      console.error("Error fetching tours:", error);
-    }
+  // Function to handle the search results from SearchField
+  const handleSearch = (tours: Tour[]) => {
+    setSearchResults(tours); // Set search results in state
   };
 
   // Toggle mobile menu
@@ -123,37 +73,8 @@ export default function NavBar() {
         </Link>
 
         {/* Search Field */}
-        <div className="mr-8 hidden lg:flex">
-          <div className="relative flex items-center w-full">
-            <FaSearch className="absolute left-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleInputChange}
-              className="w-full pl-12 pr-28 py-4 border border-gray-300 rounded-full"
-              placeholder="Search locations..."
-            />
-            <button
-              onClick={handleSearch}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full mx-2"
-            >
-              Search
-            </button>
-          </div>
-          {/* Location Suggestions */}
-          {locationResults.length > 0 && (
-            <ul className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-md max-h-64 overflow-y-auto w-full z-50">
-              {locationResults.map((loc) => (
-                <li
-                  key={loc.id}
-                  onClick={() => setSearchQuery(loc.name)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                >
-                  {loc.name}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div>
+          <SearchField onSearch={handleSearch} /> {/* Pass handleSearch as onSearch prop */}
         </div>
 
         {/* Hamburger Icon */}
@@ -189,15 +110,14 @@ export default function NavBar() {
         </button>
       </div>
 
-      {/* Display Tours */}
-      {tours.length > 0 && (
-        <div className="mt-10">
-          <h3 className="text-xl font-bold mb-4">Tours:</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tours.map((tour) => (
-              <li key={tour.id} className="border p-4 rounded-lg shadow-md">
-                <h4 className="font-semibold text-lg">{tour.title}</h4>
-                <p>{tour.description}</p>
+      {/* Optionally show search results */}
+      {searchResults.length > 0 && (
+        <div className="search-results">
+          <h3 className="font-bold text-xl">Search Results</h3>
+          <ul>
+            {searchResults.map((tour) => (
+              <li key={tour.id} className="p-2 border-b">
+                {tour.title} - ${tour.price}
               </li>
             ))}
           </ul>

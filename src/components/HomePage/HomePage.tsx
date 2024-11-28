@@ -4,6 +4,7 @@ import React, { useState, } from "react";
 import { FaArrowRight, FaLeaf, FaLandmark, FaUtensils, FaFutbol, } from "react-icons/fa";
 
 import Destination from "./Destination";
+import SearchFilter from "../SearchFilter";
 
 export const metadata: Metadata = {
   title: "Home | Better-Trip-Travel",
@@ -79,6 +80,8 @@ export default function HomePage() {
 
             </div>
             <Destination/>
+
+            <SearchFilter/>
             
 
           
