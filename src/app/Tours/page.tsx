@@ -1,11 +1,10 @@
+// Add this at the very top of your file
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
 import apiClient from "../../Utils/apiClients";
-import { HeartIcon } from "@heroicons/react/24/solid";
+import Filter from "../../components/Filter";
+import TourCard from "../../components/cards/TourCard";
 
 interface Tour {
   id: number;
@@ -24,31 +23,31 @@ interface Tour {
 }
 
 const Tours = () => {
-  const [tours, setTours] = useState<Tour[]>([]); // Stores fetched tours
-  const [error, setError] = useState<string | null>(null); // Handles error state
-  const [destinationId, setDestinationId] = useState<string | null>(null); // Destination/location ID from query
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [destinationId, setDestinationId] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     price: "",
     language: "",
     duration: "",
     time: "",
-  }); // Filters state
-  const [sort, setSort] = useState<string>("recommended"); // Sorting state
-  const [filterPopup, setFilterPopup] = useState<boolean>(false); // Filter popup visibility
+  });
+  const [sort, setSort] = useState<string>("recommended");
+  const [filterPopup, setFilterPopup] = useState<boolean>(false);
 
-  // Get `location_id` from query parameters
+  // Set destinationId from URL if present
   useEffect(() => {
     const destinationQuery = new URLSearchParams(window.location.search).get("location_id");
     if (destinationQuery) {
-      setDestinationId(destinationQuery); // Save `location_id` in state
+      setDestinationId(destinationQuery); // Destination-specific URL
+    } else {
+      setDestinationId(null); // No location_id, show all tours
     }
   }, []);
 
-  // Fetch tours when `destinationId` changes
+  // Fetch tours based on destinationId or show all tours
   useEffect(() => {
     const fetchTours = async () => {
-      if (!destinationId) return; // Do nothing if destinationId is null
-
       try {
         let allTours: Tour[] = [];
         let page = 1;
@@ -57,7 +56,7 @@ const Tours = () => {
         while (hasMore) {
           const response = await apiClient.get("/tour/search", {
             params: {
-              location_id: destinationId, // Pass the location ID
+              location_id: destinationId || "", // Pass empty string if no destinationId
               limit: 10,
               page: page,
             },
@@ -70,17 +69,22 @@ const Tours = () => {
           page++;
         }
 
-        setTours(allTours); // Update state with fetched tours
-      } catch (err: any) {
-        console.error("Error fetching tours:", err.response || err);
-        setError("Failed to fetch tours"); // Handle errors
+        setTours(allTours);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("Error fetching tours:", err.message);
+          setError("Failed to fetch tours");
+        } else {
+          console.error("Unexpected error:", err);
+          setError("Failed to fetch tours");
+        }
       }
     };
 
     fetchTours();
-  }, [destinationId]); // Trigger fetchTours when destinationId changes
+  }, [destinationId]); // Fetch tours whenever destinationId changes
 
-  // Apply additional filters to fetched tours
+  // Filter tours based on selected filters (price, language, duration, time)
   const filteredTours = tours.filter((tour) => {
     const matchesPrice = filters.price ? tour.sale_price === filters.price : true;
     const matchesLanguage = filters.language ? tour.title.includes(filters.language) : true;
@@ -96,82 +100,22 @@ const Tours = () => {
 
   return (
     <div className="p-4 lg:px-14 lg:py-14">
-      {/* Top Filters and Sort Section */}
-      <div className="flex justify-between items-center mb-4">
-        {/* Left Side Filters */}
-        <div className="flex gap-4">
-          <select
-            className="p-2 border rounded"
-            value={filters.price}
-            onChange={(e) => setFilters({ ...filters, price: e.target.value })}
-          >
-            <option value="">Price</option>
-            <option value="low">Low</option>
-            <option value="high">High</option>
-          </select>
-          <select
-            className="p-2 border rounded"
-            value={filters.language}
-            onChange={(e) => setFilters({ ...filters, language: e.target.value })}
-          >
-            <option value="">Language</option>
-            <option value="en">English</option>
-            <option value="fr">French</option>
-          </select>
-          <select
-            className="p-2 border rounded"
-            value={filters.duration}
-            onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
-          >
-            <option value="">Duration</option>
-            <option value="short">Short</option>
-            <option value="long">Long</option>
-          </select>
-          <select
-            className="p-2 border rounded"
-            value={filters.time}
-            onChange={(e) => setFilters({ ...filters, time: e.target.value })}
-          >
-            <option value="">Time</option>
-            <option value="morning">Morning</option>
-            <option value="evening">Evening</option>
-          </select>
-        </div>
+      <Filter
+        filters={filters}
+        setFilters={setFilters}
+        sort={sort}
+        setSort={setSort}
+        setFilterPopup={setFilterPopup}
+      />
 
-        {/* Right Side Sort and Filter */}
-        <div className="flex items-center gap-4">
-          {/* Sort Dropdown */}
-          <select
-            className="p-2 border rounded"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-          >
-            <option value="recommended">Recommended</option>
-            <option value="price-low-high">Price: Low to High</option>
-            <option value="price-high-low">Price: High to Low</option>
-          </select>
-
-          {/* Filter Button */}
-          <button
-            onClick={() => setFilterPopup(true)}
-            className="p-2 bg-blue-500 text-white rounded"
-          >
-            Filter
-          </button>
-        </div>
-      </div>
-
-      {/* Tours Found Message */}
       <div className="mb-4 text-gray-700">
         <span className="font-semibold">{filteredTours.length}</span> Tours Found
       </div>
 
-      {/* Filter Popup */}
       {filterPopup && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[645px] h-[530px]">
             <h2 className="text-lg font-bold mb-4">Filter Options</h2>
-            {/* Add your filter options here */}
             <button
               onClick={() => setFilterPopup(false)}
               className="mt-4 p-2 bg-red-500 text-white rounded"
@@ -182,45 +126,9 @@ const Tours = () => {
         </div>
       )}
 
-      {/* Tours Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {filteredTours.map((tour) => (
-          <Link href={`/tour/${tour.id}`} key={tour.id}>
-            <motion.div
-              className="tour-card bg-white rounded-lg overflow-hidden cursor-pointer"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <div className="relative">
-                <Image
-                  width={500}
-                  height={300}
-                  src={tour.image}
-                  alt={tour.title}
-                  className="w-full h-48 object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
-                />
-                <div className="absolute top-2 right-2">
-                  <HeartIcon className="w-6 h-6 text-white hover:text-red-500 transition-colors duration-300" />
-                </div>
-              </div>
-              <div className="p-4 border-2">
-                <p className="text-sm text-gray-500">
-                  <Link href={`/Tours?location_id=${tour.location.id}`} className="text-blue-500 hover:underline">
-                    {tour.location.name}
-                  </Link>
-                </p>
-                <h3 className="text-xl font-semibold text-gray-800 line-clamp-2">{tour.title}</h3>
-                <div className="mt-2 space-y-1">
-                  <p className="text-sm text-gray-500">{tour.duration}</p>
-                  <p className="text-lg font-bold text-primary">
-                    From <span className="font-semibold">{tour.sale_price}</span>
-                    <span className="text-sm font-light"> per person</span>
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </Link>
+          <TourCard key={tour.id} tour={tour} />
         ))}
       </div>
     </div>

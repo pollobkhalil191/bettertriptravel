@@ -1,9 +1,8 @@
 "use client";
 import { Metadata } from "next";
-import React, { useState, useRef } from "react";
-import { FaArrowRight, FaLeaf, FaLandmark, FaUtensils, FaFutbol, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import Image from "next/image";
-import TourCard from "../cards/TourCard";
+import React, { useState, } from "react";
+import { FaArrowRight, FaLeaf, FaLandmark, FaUtensils, FaFutbol, } from "react-icons/fa";
+
 import Destination from "./Destination";
 
 export const metadata: Metadata = {
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("nature");
-  const sliderRef = useRef<HTMLDivElement>(null);
+ 
  
   const tabs = [
     { id: "nature", label: "Nature", icon: <FaLeaf />, bg: "https://i.ibb.co/q11VRrt/BM24-HP-DESKTOP-011-right.webp" },
@@ -29,24 +28,9 @@ export default function HomePage() {
     { id: 4, tab: "sports", title: "Adventure Sports", description: "Feel the adrenaline." },
   ];
 
-  const destinations = [
-    { id: 1, name: "Wembley Stadium", image: "/wembley.jpg" },
-    { id: 2, name: "Camp Nou", image: "/campnou.jpg" },
-    { id: 3, name: "Yankee Stadium", image: "/yankee.jpg" },
-  ];
+ 
 
-  const aweInspiringDestinations = [
-    { id: 1, name: "Alps", image: "/alps.jpg" },
-    { id: 2, name: "Maldives", image: "/maldives.jpg" },
-    { id: 3, name: "Mount Fuji", image: "/fuji.jpg" },
-  ];
-
-  const handleSlider = (direction: "left" | "right") => {
-    if (sliderRef.current) {
-      const scrollAmount = direction === "left" ? -300 : 300;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
+  
 
   return (
     <div>

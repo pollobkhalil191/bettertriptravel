@@ -1,0 +1,56 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-5e845755fc49a874.js",
+      "static/chunks/4bd1b696-f7083ef5688de2f1.js",
+      "static/chunks/517-05260d8ed119c2e1.js",
+      "static/chunks/main-app-0b9ab2ce342ef875.js",
+      "static/chunks/app/_not-found/page-6b6adbc0da0778cf.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-5e845755fc49a874.js",
+      "static/chunks/4bd1b696-f7083ef5688de2f1.js",
+      "static/chunks/517-05260d8ed119c2e1.js",
+      "static/chunks/main-app-0b9ab2ce342ef875.js",
+      "static/css/02ae9f6e03be8990.css",
+      "static/chunks/8e1d74a4-b3dc7c03b7ae79ca.js",
+      "static/chunks/565-085f1698aadfd152.js",
+      "static/chunks/651-a69db2b4b3ac2f05.js",
+      "static/chunks/234-e081638e7d17049e.js",
+      "static/chunks/app/layout-ede387390e8d58b7.js"
+    ],
+    "/Tours/page": [
+      "static/chunks/webpack-5e845755fc49a874.js",
+      "static/chunks/4bd1b696-f7083ef5688de2f1.js",
+      "static/chunks/517-05260d8ed119c2e1.js",
+      "static/chunks/main-app-0b9ab2ce342ef875.js",
+      "static/chunks/8e1d74a4-b3dc7c03b7ae79ca.js",
+      "static/chunks/565-085f1698aadfd152.js",
+      "static/chunks/651-a69db2b4b3ac2f05.js",
+      "static/chunks/234-e081638e7d17049e.js",
+      "static/chunks/app/Tours/page-beffc01f9500895c.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-5e845755fc49a874.js",
+      "static/chunks/4bd1b696-f7083ef5688de2f1.js",
+      "static/chunks/517-05260d8ed119c2e1.js",
+      "static/chunks/main-app-0b9ab2ce342ef875.js",
+      "static/chunks/8e1d74a4-b3dc7c03b7ae79ca.js",
+      "static/chunks/5e22fd23-e917a15adeb09847.js",
+      "static/chunks/565-085f1698aadfd152.js",
+      "static/chunks/234-e081638e7d17049e.js",
+      "static/chunks/app/page-4475b94c628f3bb9.js"
+    ],
+    "/tour/[id]/page": [
+      "static/chunks/webpack-5e845755fc49a874.js",
+      "static/chunks/4bd1b696-f7083ef5688de2f1.js",
+      "static/chunks/517-05260d8ed119c2e1.js",
+      "static/chunks/main-app-0b9ab2ce342ef875.js",
+      "static/css/57cae671176964c8.css",
+      "static/chunks/565-085f1698aadfd152.js",
+      "static/chunks/651-a69db2b4b3ac2f05.js",
+      "static/chunks/347-4479e2203618ae81.js",
+      "static/chunks/app/tour/[id]/page-9652f957d28635ea.js"
+    ]
+  }
+}
