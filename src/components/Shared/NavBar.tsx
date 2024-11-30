@@ -1,23 +1,15 @@
 "use client"; // Mark this file as a client component
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { FaHeart, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
-import SearchField from "../SearchFilter"; // Ensure the correct import
-
-// Define Tour type
-interface Tour {
-  id: number;
-  title: string;
-  price: number;
-}
+import SearchField from "../SearchFilter"; // Ensure correct import
 
 export default function NavBar() {
   const [isSticky, setIsSticky] = useState(false); // Sticky header state
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Mobile menu state
   const [isProfileOpen, setIsProfileOpen] = useState(false); // User profile popup state
-  const [searchResults, setSearchResults] = useState<Tour[]>([]); // Initialize searchResults with an empty array
 
   // Handle scroll for sticky header
   useEffect(() => {
@@ -29,11 +21,6 @@ export default function NavBar() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  // Function to handle the search results from SearchField
-  const handleSearch = (tours: Tour[]) => {
-    setSearchResults(tours); // Set search results in state
-  };
 
   // Toggle mobile menu
   const toggleMenu = () => {
@@ -56,9 +43,7 @@ export default function NavBar() {
 
   return (
     <nav
-      className={`navbar bg-base-100 shadow-md px-5 lg:px-20 ${
-        isSticky ? "sticky-header" : ""
-      }`}
+      className={`navbar bg-base-100 shadow-md px-5 lg:px-20 ${isSticky ? "sticky-header" : ""}`}
     >
       <div className="navbar-start flex items-center w-full">
         {/* Logo */}
@@ -74,7 +59,7 @@ export default function NavBar() {
 
         {/* Search Field */}
         <div className="hidden lg:block ml-4">
-          <SearchField onSearch={handleSearch} /> {/* Pass handleSearch as onSearch prop */}
+          <SearchField /> {/* No need for onSearch prop */}
         </div>
 
         {/* Hamburger Icon */}
@@ -112,9 +97,7 @@ export default function NavBar() {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 w-64 bg-white h-full shadow-lg z-50 transform ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300`}
+        className={`fixed top-0 right-0 w-64 bg-white h-full shadow-lg z-50 transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300`}
       >
         <div className="p-4 flex justify-between items-center">
           {/* Close Button */}
@@ -143,20 +126,6 @@ export default function NavBar() {
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={toggleMenu}
         ></div>
-      )}
-
-      {/* Optionally show search results */}
-      {searchResults.length > 0 && (
-        <div className="search-results mt-4 bg-white shadow-lg rounded-lg p-4">
-          <h3 className="font-bold text-xl">Search Results</h3>
-          <ul>
-            {searchResults.map((tour) => (
-              <li key={tour.id} className="p-2 border-b">
-                {tour.title} - ${tour.price}
-              </li>
-            ))}
-          </ul>
-        </div>
       )}
     </nav>
   );
