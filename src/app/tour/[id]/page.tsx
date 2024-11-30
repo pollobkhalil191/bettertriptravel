@@ -1,8 +1,7 @@
-"use client";
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+'use client';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 type TourDetail = {
   id: number;
@@ -47,21 +46,24 @@ type TourDetail = {
 };
 
 const getTourDetails = async (id: string): Promise<TourDetail> => {
-  const res = await axios.get(`https://btt.triumphdigital.co.th/api/tour/detail/${id}`);
+  const res = await axios.get(
+    `https://btt.triumphdigital.co.th/api/tour/detail/${id}`
+  );
   return res.data.data;
 };
 
 type Props = {
-  params: { id: string };
+  params: {
+    id: string;
+  };
 };
 
 const TourDetails: React.FC<Props> = ({ params }) => {
   const [tour, setTour] = useState<TourDetail | null>(null);
 
   useEffect(() => {
-    // We are using the "use" hook to access `params.id` safely
     const fetchTourDetails = async () => {
-      if (params) {
+      if (params?.id) {
         const tourData = await getTourDetails(params.id);
         setTour(tourData);
       }
@@ -70,9 +72,7 @@ const TourDetails: React.FC<Props> = ({ params }) => {
     fetchTourDetails();
   }, [params]);
 
-  if (!tour) {
-    return <div>Loading...</div>;
-  }
+  if (!tour) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -148,7 +148,10 @@ const TourDetails: React.FC<Props> = ({ params }) => {
             <h2 className="text-2xl font-bold text-gray-800">FAQs</h2>
             <div className="mt-4 space-y-4">
               {tour.faqs.map((faq, idx) => (
-                <details key={idx} className="bg-gray-100 p-4 rounded-lg group">
+                <details
+                  key={idx}
+                  className="bg-gray-100 p-4 rounded-lg group"
+                >
                   <summary className="font-semibold cursor-pointer group-open:text-blue-600">
                     {faq.title}
                   </summary>
@@ -208,10 +211,11 @@ const TourDetails: React.FC<Props> = ({ params }) => {
               />
               <div className="p-4">
                 <h3 className="text-lg font-bold">{related.title}</h3>
-                <p className="text-sm text-gray-500">{related.location.name}</p>
+                <p className="text-sm text-gray-500">
+                  {related.location.name}
+                </p>
                 <p className="text-green-600 mt-2">
-                  ${related.sale_price}{' '}
-                  <span className="text-gray-500">(was ${related.price})</span>
+                  ${related.sale_price} <span className="text-gray-500">(was ${related.price})</span>
                 </p>
               </div>
             </div>
