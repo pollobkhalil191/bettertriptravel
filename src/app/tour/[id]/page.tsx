@@ -52,10 +52,6 @@ const getTourDetails = async (id: string): Promise<TourDetail> => {
   return res.data.data;
 };
 
-type TourDetailsProps = {
-  tour: TourDetail;
-};
-
 // Dynamic route for tour details
 export default async function TourDetails({
   params,
