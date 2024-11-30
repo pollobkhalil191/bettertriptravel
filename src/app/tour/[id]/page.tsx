@@ -1,5 +1,4 @@
-'use client';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 
@@ -45,6 +44,7 @@ type TourDetail = {
   }[];
 };
 
+// Fetch tour details
 const getTourDetails = async (id: string): Promise<TourDetail> => {
   const res = await axios.get(
     `https://btt.triumphdigital.co.th/api/tour/detail/${id}`
@@ -52,27 +52,25 @@ const getTourDetails = async (id: string): Promise<TourDetail> => {
   return res.data.data;
 };
 
-type Props = {
-  params: {
-    id: string;
-  };
+type TourDetailsProps = {
+  tour: TourDetail;
 };
 
-const TourDetails: React.FC<Props> = ({ params }) => {
-  const [tour, setTour] = useState<TourDetail | null>(null);
+// Dynamic route for tour details
+export default async function TourDetails({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { id } = params;
 
-  useEffect(() => {
-    const fetchTourDetails = async () => {
-      if (params?.id) {
-        const tourData = await getTourDetails(params.id);
-        setTour(tourData);
-      }
-    };
+  // Fetch tour details on the server
+  const tour = await getTourDetails(id);
 
-    fetchTourDetails();
-  }, [params]);
-
-  if (!tour) return <div>Loading...</div>;
+  if (!tour) {
+    // If the tour is not found, handle appropriately (404 or notFound)
+    return { notFound: true };
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -224,6 +222,4 @@ const TourDetails: React.FC<Props> = ({ params }) => {
       </div>
     </div>
   );
-};
-
-export default TourDetails;
+}
