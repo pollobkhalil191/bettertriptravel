@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { FaHeart, FaShoppingCart, FaUser, FaBars } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import SearchField from "../SearchFilter"; // Ensure the correct import
 
 // Define Tour type
@@ -60,7 +60,7 @@ export default function NavBar() {
         isSticky ? "sticky-header" : ""
       }`}
     >
-      <div className="navbar-start flex  items-center w-full">
+      <div className="navbar-start flex items-center w-full">
         {/* Logo */}
         <Link href="/">
           <Image
@@ -73,19 +73,18 @@ export default function NavBar() {
         </Link>
 
         {/* Search Field */}
-        <div className="">
+        <div className="hidden lg:block ml-4">
           <SearchField onSearch={handleSearch} /> {/* Pass handleSearch as onSearch prop */}
         </div>
 
         {/* Hamburger Icon */}
-        <button className="lg:hidden text-2xl" onClick={toggleMenu}>
+        <button className="lg:hidden text-2xl ml-auto" onClick={toggleMenu}>
           <FaBars />
         </button>
       </div>
 
-        {/* Menu and Icon */}
-      <div className="">
-         <div className="navbar-center  hidden lg:flex mr-16 gap-6">
+      {/* Menu Items (Desktop) */}
+      <div className="navbar-center hidden lg:flex gap-6">
         {menuItems.map((item, index) => (
           <Link
             key={index}
@@ -98,7 +97,7 @@ export default function NavBar() {
         ))}
       </div>
 
-      {/* Icons */}
+      {/* Icons (Desktop) */}
       <div className="navbar-end hidden lg:flex items-center gap-4">
         <button className="text-lg">
           <FaHeart />
@@ -110,15 +109,45 @@ export default function NavBar() {
           <FaUser />
         </button>
       </div>
+
+      {/* Mobile Menu */}
+      <div
+        className={`fixed top-0 right-0 w-64 bg-white h-full shadow-lg z-50 transform ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } transition-transform duration-300`}
+      >
+        <div className="p-4 flex justify-between items-center">
+          {/* Close Button */}
+          <h2 className="text-lg font-bold">Menu</h2>
+          <button onClick={toggleMenu} className="text-xl absolute top-4 right-4">
+            <FaTimes />
+          </button>
+        </div>
+        <div className="flex flex-col gap-4 px-4 mt-4">
+          {menuItems.map((item, index) => (
+            <Link
+              key={index}
+              href={item.path}
+              className="text-base text-gray-700 hover:text-blue-500"
+              onClick={toggleMenu} // Close menu on click
+            >
+              {item.title}
+            </Link>
+          ))}
+        </div>
       </div>
 
-
-      {/* Centered Menu Items */}
-     
+      {/* Overlay (For closing the menu when clicking outside) */}
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={toggleMenu}
+        ></div>
+      )}
 
       {/* Optionally show search results */}
       {searchResults.length > 0 && (
-        <div className="search-results">
+        <div className="search-results mt-4 bg-white shadow-lg rounded-lg p-4">
           <h3 className="font-bold text-xl">Search Results</h3>
           <ul>
             {searchResults.map((tour) => (
