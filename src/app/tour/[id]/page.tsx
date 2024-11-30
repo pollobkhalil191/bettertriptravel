@@ -45,7 +45,7 @@ type TourDetail = {
 };
 
 type PageProps = {
-  params: { id: string };
+  params: { id: string }; // Explicitly define the 'params' type
 };
 
 // Fetching tour details on the server side
