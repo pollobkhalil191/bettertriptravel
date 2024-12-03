@@ -36,7 +36,7 @@ export default function NavBar() {
   const menuItems = [
     { title: "Home", path: "/" },
     { title: "About Us", path: "#" },
-    { title: "Tours", path: "/Tours" },
+    { title: "Tours", path: "/tour" },
     { title: "Contact", path: "#" },
     { title: "Blog", path: "#" },
   ];

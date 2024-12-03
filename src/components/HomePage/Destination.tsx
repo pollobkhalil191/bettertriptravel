@@ -1,16 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { useEffect, useState } from "react"; 
 import Link from "next/link";
-
-interface Destination {
-  id: number;
-  title: string;
-  image: string;
-  tourCount: number;
-}
+import Image from "next/image";
+import { fetchHomePageData } from "../../Api/homePageService";  // Adjust the path as needed
 
 interface Location {
   id: number;
@@ -18,104 +11,59 @@ interface Location {
   image: string;
 }
 
-interface Tour {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
+interface ToursData {
+  data: Array<{
+    id: number;
+    title: string;
+    image: string;
+    tourCount: number;
+  }>;
 }
 
-interface ToursResponse {
-  data: Tour[];
+interface DestinationType {
+  id: number;
+  title: string;
+  image: string;
+  tourCount: number;
 }
 
 export default function Destination() {
-  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [destinations, setDestinations] = useState<DestinationType[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);  // State to track if client-side
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    // This effect will run only on the client side
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
     const fetchDestinations = async () => {
-      try {
-        const response = await fetch(
-          "https://btt.triumphdigital.co.th/api/home-page"
+      const data = await fetchHomePageData();
+
+      if (data) {
+        const locations = data.data.find(
+          (item: { type: string; model: { data: Location[] } }) => item.type === "list_locations"
+        )?.model?.data || [];
+
+        const destinationsWithTourCount = await Promise.all(
+          locations.map(async (location: Location) => {
+            const toursResponse = await fetch(
+              `https://btt.triumphdigital.co.th/api/tour/search?location_id=${location.id}`
+            );
+            const toursData: ToursData = await toursResponse.json();
+            return {
+              id: location.id,
+              title: location.title,
+              image: location.image,
+              tourCount: toursData.data.length || 0,
+            };
+          })
         );
-        const data = await response.json();
-
-        const locations: Location[] =
-          data.data.find((item: { type: string }) => item.type === "list_locations")?.model?.data ||
-          [];
-
-        if (locations) {
-          const destinationsWithTourCount = await Promise.all(
-            locations.map(async (location: Location) => {
-              const toursResponse = await fetch(
-                `https://btt.triumphdigital.co.th/api/tour/search?location_id=${location.id}`
-              );
-              const toursData: ToursResponse = await toursResponse.json();
-              return {
-                id: location.id,
-                title: location.title,
-                image: location.image,
-                tourCount: toursData.data.length || 0,
-              };
-            })
-          );
-          setDestinations(destinationsWithTourCount);
-        }
-      } catch (err) {
-        setError((err as Error).message || "Failed to fetch data");
+        setDestinations(destinationsWithTourCount);
+      } else {
+        setError("Failed to fetch destinations data.");
       }
     };
 
     fetchDestinations();
   }, []);
 
-  const handleSlider = (direction: "left" | "right") => {
-    if (!isClient) return;  // Ensure the code runs only in the browser
-
-    const cardWidth = 180; // Width of one card
-    const visibleCards = window.innerWidth <= 768 ? 2 : 6; // For small screens, show 2 cards, for larger screens, show 6
-    const totalCards = destinations.length;
-    const container = sliderRef.current;
-
-    if (!container) return;
-
-    if (direction === "right" && currentIndex + visibleCards < totalCards) {
-      setCurrentIndex(currentIndex + visibleCards);
-      container.scrollTo({
-        left: (currentIndex + visibleCards) * cardWidth,
-        behavior: "smooth",
-      });
-    } else if (direction === "left" && currentIndex > 0) {
-      setCurrentIndex(currentIndex - visibleCards);
-      container.scrollTo({
-        left: (currentIndex - visibleCards) * cardWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const canScrollLeft = currentIndex > 0;
-  const canScrollRight =
-    currentIndex + (isClient && window.innerWidth <= 768 ? 2 : 6) < destinations.length;
-
-  const visibleDestinations = destinations.slice(
-    currentIndex,
-    currentIndex + (isClient && window.innerWidth <= 768 ? 2 : 6)
-  );
-
   if (error) return <div>Error: {error}</div>;
-
-  if (!isClient) return null; // Return null until the client-side code is ready
 
   return (
     <section className="py-10 px-5 lg:px-20">
@@ -123,11 +71,8 @@ export default function Destination() {
         Awe-inspiring destinations around the world
       </h2>
       <div className="relative">
-        <div
-          ref={sliderRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth transition-transform duration-500 ease-in-out"
-        >
-          {visibleDestinations.map((destination) => (
+        <div className="flex gap-4 overflow-x-auto scroll-smooth">
+          {destinations.map((destination) => (
             <Link
               key={destination.id}
               href={`/Tours?location_id=${destination.id}`}
@@ -154,24 +99,6 @@ export default function Destination() {
             </Link>
           ))}
         </div>
-        {/* Left Arrow for small and large screens */}
-        <button
-          onClick={() => handleSlider("left")}
-          className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white -ml-4 p-2 rounded-full shadow-lg ${
-            canScrollLeft ? "block" : "hidden"
-          } sm:block`}
-        >
-          <IoIosArrowBack size={24} />
-        </button>
-        {/* Right Arrow for small and large screens */}
-        <button
-          onClick={() => handleSlider("right")}
-          className={`absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800  text-white p-2 rounded-full shadow-lg ${
-            canScrollRight ? "block" : "hidden"
-          } sm:block`}
-        >
-          <IoIosArrowForward size={24} />
-        </button>
       </div>
     </section>
   );
