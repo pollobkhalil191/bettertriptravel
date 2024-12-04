@@ -47,13 +47,13 @@ type Tour = {
   banner_image?: string;
 };
 
-interface Props {
+interface PageProps {
   params: {
     id: string; // Dynamic parameter from the URL (e.g., `tour/123`)
   };
 }
 
-const TourDetails = async ({ params }: Props) => {
+const TourDetails = async ({ params }: PageProps) => {
   const { id } = params; // Access the `id` parameter directly
   let tour: Tour | null = null;
 
