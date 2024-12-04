@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Define the type for a tab
+interface Tab {
+  title: string;
+  desc: string;
+}
+
 const TabHero = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [tabs, setTabs] = useState<any[]>([]);
+  const [tabs, setTabs] = useState<Tab[]>([]); // Use the Tab type here
 
   // Fetch data from the API
   useEffect(() => {
     const fetchTabs = async () => {
       try {
         const response = await axios.get('https://btt.triumphdigital.co.th/api/home-page');
-        const listItems = response.data.list_item || [];
+        const listItems: Tab[] = response.data.list_item || [];
         setTabs(listItems);
       } catch (error) {
         console.error('Error fetching tabs data:', error);

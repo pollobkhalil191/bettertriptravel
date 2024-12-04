@@ -23,6 +23,10 @@ interface Tour {
   };
 }
 
+interface TourResponse {
+  data: Tour[];
+}
+
 interface TourCardProps {
   location_id: number;
 }

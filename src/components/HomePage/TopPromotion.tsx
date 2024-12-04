@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 // Define the structure of a tour
 interface Tour {
@@ -67,7 +68,8 @@ const TopPromotion: React.FC = () => {
               key={tour.id}
               className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all hover:scale-105 hover:shadow-2xl"
             >
-              <img
+              <Image
+        
                 className="w-full h-64 object-cover"
                 src={tour.image}
                 alt={tour.title}
