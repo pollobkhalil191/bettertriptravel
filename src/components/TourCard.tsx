@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -28,7 +29,7 @@ interface TourResponse {
 }
 
 interface TourCardProps {
-  location_id: number;
+  location_id?: number | null; // Optional location ID
 }
 
 const TourCard = ({ location_id }: TourCardProps) => {
@@ -40,14 +41,14 @@ const TourCard = ({ location_id }: TourCardProps) => {
     const fetchTours = async () => {
       try {
         setLoading(true);
-        console.log('Fetching all tours for location_id:', location_id);
+        console.log('Fetching tours for location_id:', location_id);
 
-        // Fetch all tours from the API
-        const data: TourResponse = await fetchToursByLocation(location_id);
+        // If location_id is null or undefined, fetch all tours
+        const data: TourResponse = await fetchToursByLocation(location_id ?? NaN);
         console.log('Fetched data:', data);
 
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-          setTours(data.data); // Set all fetched tours
+          setTours(data.data); // Set the fetched tours
         } else {
           setError('No tours available for this location');
         }
@@ -59,7 +60,7 @@ const TourCard = ({ location_id }: TourCardProps) => {
       }
     };
 
-    fetchTours(); // Fetch tours on component mount
+    fetchTours();
   }, [location_id]);
 
   if (loading) return <div>Loading...</div>;

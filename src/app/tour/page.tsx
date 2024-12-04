@@ -3,7 +3,7 @@ import React from 'react';
 
 const page = () => {
   // Set locationId to null to show all tours
-  const locationId = null; // or you can omit it completely
+  const locationId: number | null = null; // Default to null for all tours
 
   return (
     <div>
