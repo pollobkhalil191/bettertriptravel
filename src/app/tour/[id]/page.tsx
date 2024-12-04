@@ -50,12 +50,15 @@ type Tour = {
 interface PageProps {
   params: {
     id: string; // Dynamic parameter from the URL (e.g., `tour/123`)
+
   };
 }
 
 const TourDetails = async ({ params }: PageProps) => {
-  const { id } = params; // Access the `id` parameter directly
+  const { id } = await params; // Access the `id` parameter directly
   let tour: Tour | null = null;
+  console.log(params); // Ensure this is an object, not a promise
+
 
   try {
     const data = await fetchTourDetails(id);
