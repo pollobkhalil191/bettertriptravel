@@ -32,13 +32,13 @@ interface TourResponse {
 
 const ParisTours = () => {
   const [tours, setTours] = useState<Tour[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchParisTours = async () => {
       try {
-        setLoading(true);
+       
 
         // Replace `2` with the actual location_id for Paris
         const locationIdForParis = 2; // Example location_id for Paris
@@ -54,24 +54,22 @@ const ParisTours = () => {
       } catch (err) {
         setError('Failed to fetch tour data');
         console.error('Error fetching tours:', err);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     fetchParisTours();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+ 
   if (error) return <div>{error}</div>;
 
-  if (tours.length === 0) return <div>No tours available for Paris</div>;
+ 
 
   const isSliderActive = tours.length > 4;
 
   return (
     <div className="px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Explore more in Paris</h2>
+      <h2 className="text-2xl font-bold mb-6">Explore more in New York</h2>
       <div className="mb-8">
        
         {/* Swiper Slider if there are more than 4 tours */}

@@ -30,8 +30,8 @@ interface TourResponse {
 
 const locations = [
   { id: null, name: 'All Locations' }, // Default tab for all locations
-  { id: 1, name: 'New York' },
-  { id: 2, name: 'Paris' },
+  { id: 2, name: 'New York' },
+  { id: 1, name: 'Paris' },
   { id: 3, name: 'Tokyo' },
 ];
 
