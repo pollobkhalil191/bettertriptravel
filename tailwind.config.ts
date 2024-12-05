@@ -1,7 +1,9 @@
 import type { Config } from "tailwindcss";
 import type { PluginAPI } from "tailwindcss/types/config";
+import daisyui from "daisyui"; // Import daisyui using ESM syntax
+import lineClamp from "@tailwindcss/line-clamp"; // Import the line-clamp plugin
 
-export default {
+const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -16,8 +18,8 @@ export default {
     },
   },
   plugins: [
-    require("daisyui"),
-    // Adding custom utilities with proper typing
+    daisyui, // Use daisyui plugin
+    lineClamp, // Use line-clamp plugin
     function (api: PluginAPI) {
       const { addUtilities } = api;
       addUtilities({
@@ -34,16 +36,17 @@ export default {
   daisyui: {
     themes: [
       {
-        'betterTrip': {
+        betterTrip: {
           primary: "#001C3F",
           secondary: "#f6d860",
           accent: "#37cdbe",
           neutral: "#3d4451",
-          "base-100": "#ffffff", // Ensure proper key usage
+          "base-100": "#ffffff",
         },
       },
-      
       "light",
-    ] as const, // This ensures TypeScript correctly infers the types of the theme objects
+    ] as const,
   },
-} satisfies Config;
+};
+
+export default config;

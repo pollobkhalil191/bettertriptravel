@@ -3,27 +3,31 @@ import { notFound } from 'next/navigation'; // Use for handling errors
 
 import Gallery from '../../../components/Gallery'; // Import the Gallery component
 
-// Define PageProps with proper params typing
 interface PageProps {
   params: {
     id: string; // Dynamic parameter from the URL (e.g., `tour/123`)
   };
 }
 
-const TourDetails = async ({ params }: PageProps) => {
-  const { id } = params; // Access the `id` parameter directly
-  let tour = null;
-
+// Async function to fetch the data
+async function getTourDetails(id: string) {
   try {
     const data = await fetchTourDetails(id);
-    tour = data?.data || null;
+    return data?.data || null;
   } catch (error) {
     console.error('Error fetching tour details:', error);
-    notFound(); // Redirect to a "not found" page if the tour doesn't exist
+    return null;
   }
+}
+
+// Synchronous React Server Component
+const TourDetails = async ({ params }: PageProps) => {
+  const { id } = params;
+  const tour = await getTourDetails(id);
 
   if (!tour) {
-    return <div>Tour not found</div>;
+    notFound(); // Redirect to a "not found" page if the tour doesn't exist
+    return null; // Ensures no component is rendered
   }
 
   // Safely handle undefined fields
