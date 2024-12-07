@@ -73,30 +73,31 @@ export default function Destination() {
       <div className="relative">
         <div className="flex gap-4 overflow-x-auto scroll-smooth">
           {destinations.map((destination) => (
-            <Link
-              key={destination.id}
-              href={`/Tours?location_id=${destination.id}`}
-              title={`Explore tours for ${destination.title}`}
-              aria-label={`Explore tours for ${destination.title}`}
-            >
-              <div className="relative flex-shrink-0 w-[180px] h-[220px] overflow-hidden rounded-lg group cursor-pointer">
-                <Image
-                  src={destination.image}
-                  alt={`Image of ${destination.title}`}
-                  width={180}
-                  height={200}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
-                  <h3 className="text-white text-sm font-bold text-left">
-                    {destination.title}
-                  </h3>
-                  <p className="text-white text-xs text-left">
-                    {destination.tourCount} tours available
-                  </p>
-                </div>
-              </div>
-            </Link>
+           <Link
+           key={destination.id}
+           href={`/tour?location_id=${destination.id}`} // Ensure location_id is passed
+           title={`Explore tours for ${destination.title}`}
+           aria-label={`Explore tours for ${destination.title}`}
+         >
+           <div className="relative flex-shrink-0 w-[180px] h-[220px] overflow-hidden rounded-lg group cursor-pointer">
+             <Image
+               src={destination.image}
+               alt={`Image of ${destination.title}`}
+               width={180}
+               height={200}
+               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+             />
+             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+               <h3 className="text-white text-sm font-bold text-left">
+                 {destination.title}
+               </h3>
+               <p className="text-white text-xs text-left">
+                 {destination.tourCount} tours available
+               </p>
+             </div>
+           </div>
+         </Link>
+         
           ))}
         </div>
       </div>

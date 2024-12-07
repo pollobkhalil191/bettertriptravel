@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { fetchToursByLocation } from '../Api/tourService';
-import { FaHeart } from 'react-icons/fa';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { fetchToursByLocation } from "../Api/tourService";
+import { FaHeart } from "react-icons/fa";
 
 interface ReviewScore {
   score_total: number;
@@ -28,45 +28,47 @@ interface TourResponse {
   data: Tour[];
 }
 
+interface TourCardProps {
+  locationId: number | null;
+  setLocationId: React.Dispatch<React.SetStateAction<number | null>>; // Add setLocationId to props
+}
+
 const locations = [
-  { id: null, name: 'All Locations' }, // Default tab for all locations
-  { id: 2, name: 'New York' },
-  { id: 1, name: 'Paris' },
-  { id: 3, name: 'Tokyo' },
+  { id: null, name: "All Locations" },
+  { id: 2, name: "New York" },
+  { id: 1, name: "Paris" },
+  { id: 3, name: "Tokyo" },
 ];
 
-const TourCard = () => {
+const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<number | null>(null); // State for selected location tab
 
   useEffect(() => {
     const fetchTours = async () => {
       try {
         setLoading(true);
-        console.log('Fetching tours for location_id:', selectedLocation);
-
-        const data: TourResponse = await fetchToursByLocation(selectedLocation ?? NaN);
-        console.log('Fetched data:', data);
-
+        const locationIdToUse = locationId ?? 0;
+        const data: TourResponse = await fetchToursByLocation(locationIdToUse);
+        
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-          setTours(data.data); // Set the fetched tours
-          setError(null); // Clear previous errors
+          setTours(data.data);
+          setError(null);
         } else {
           setTours([]);
-          setError('No tours available for this location');
+          setError("No tours available for this location");
         }
       } catch (err) {
-        setError('Failed to fetch tour data');
-        console.error('Error fetching tours:', err);
+        setError("Failed to fetch tour data");
+        console.error("Error fetching tours:", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTours();
-  }, [selectedLocation]);
+  }, [locationId]);
 
   return (
     <div className="px-4 py-8">
@@ -75,11 +77,10 @@ const TourCard = () => {
         {locations.map((location) => (
           <button
             key={location.id}
-            onClick={() => setSelectedLocation(location.id)}
-            className={`px-4 py-2 text-sm font-medium rounded ${
-              selectedLocation === location.id
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+            onClick={() => setLocationId(location.id)} // Use setLocationId to update the state
+            className={`px-4 py-2 text-sm font-medium rounded ${locationId === location.id
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-600 hover:bg-gray-300"
             }`}
           >
             {location.name}
@@ -110,7 +111,7 @@ const TourCard = () => {
                 />
               </div>
               <div className="p-4">
-                <p className="text-sm font-medium text-gray-500">{tour.location?.name || 'Unknown Location'}</p>
+                <p className="text-sm font-medium text-gray-500">{tour.location?.name || "Unknown Location"}</p>
                 <h3 className="text-xl font-semibold">{tour.title}</h3>
                 <p className="text-gray-600 mt-2">{tour.duration}</p>
                 <div className="mt-2 flex items-center">
@@ -119,7 +120,7 @@ const TourCard = () => {
                 </div>
                 <div className="mt-2 items-center">
                   <p className="text-sm text-gray-400 line-through">
-                    {tour.sale_price ? `$${tour.price}` : ''}
+                    {tour.sale_price ? `$${tour.price}` : ""}
                   </p>
                   <p className="text-lg font-bold text-textPrimary">
                     From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
