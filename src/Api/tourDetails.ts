@@ -1,4 +1,5 @@
-import axios from "axios";
+// api/tourDetails.ts
+import axios from 'axios';
 
 // Define the type for the tour details response
 export interface TourDetailsResponse {
@@ -37,7 +38,7 @@ export const fetchTourDetails = async (tourId: string): Promise<TourDetailsRespo
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching tour details:", error);
+    console.error('Error fetching tour details:', error);
     throw error;
   }
 };

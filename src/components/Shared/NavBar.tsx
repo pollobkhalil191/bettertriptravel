@@ -37,7 +37,7 @@ export default function NavBar() {
     { title: "Home", path: "/" },
     { title: "About Us", path: "#" },
     { title: "Tours", path: "/tour" },
-    { title: "Contact", path: "#" },
+    { title: "Contact", path: "/contactUs" },
     { title: "Blog", path: "#" },
   ];
 
@@ -101,7 +101,7 @@ export default function NavBar() {
       >
         <div className="p-4 flex justify-between items-center">
           {/* Close Button */}
-          <h2 className="text-lg font-bold">Menu</h2>
+          
           <button onClick={toggleMenu} className="text-xl absolute top-4 right-4">
             <FaTimes />
           </button>

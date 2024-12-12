@@ -1,73 +1,180 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { fetchToursByLocation } from "../../Api/tourService";
+import { FaHeart } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
 
-// Define the type for a tab
-interface Tab {
+interface Location {
+  id: number;
   title: string;
-  desc: string;
+  sub_title: string;
+  image: string;
 }
 
-const TabHero = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [tabs, setTabs] = useState<Tab[]>([]); // Use the Tab type here
+interface ReviewScore {
+  score_total: number;
+  total_review: number;
+}
 
-  // Fetch data from the API
+interface Tour {
+  id: number;
+  title: string;
+  image: string;
+  duration: string;
+  price: number;
+  sale_price?: number;
+  review_score: ReviewScore;
+  location?: {
+    name: string;
+  };
+}
+
+interface TourResponse {
+  data: Tour[];
+}
+
+interface TourCardProps {
+  locationId: number | null;
+  setLocationId: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+export default function TourCard({ locationId, setLocationId }: TourCardProps) {
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const fetchTabs = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('https://btt.triumphdigital.co.th/api/home-page');
-        const listItems: Tab[] = response.data.list_item || [];
-        setTabs(listItems);
-      } catch (error) {
-        console.error('Error fetching tabs data:', error);
+        setLoading(true);
+        const response = await fetch("https://btt.triumphdigital.co.th/api/locations");
+        const locationData = await response.json();
+        setLocations(locationData.data || []);
+
+        const locationIdToUse = locationId ?? 0;
+        const tourResponse: TourResponse = await fetchToursByLocation(locationIdToUse);
+
+        if (tourResponse?.data && Array.isArray(tourResponse.data) && tourResponse.data.length > 0) {
+          setTours(tourResponse.data);
+          setError(null);
+        } else {
+          setTours([]);
+          setError("No tours available for this location");
+        }
+      } catch (err) {
+        setError("Failed to fetch data");
+        console.error("Error fetching tours:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchTabs();
-  }, []);
+    fetchData();
+  }, [locationId]);
 
   return (
-    <div className="relative">
+    <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <div
-        className="relative w-full h-[400px] sm:h-[500px] bg-cover bg-center"
-        style={{ backgroundImage: 'url("https://example.com/hero-image.jpg")' }}
-      >
-        <div className="absolute inset-0 bg-black opacity-40"></div>
-        <div className="relative z-10 flex items-center justify-center h-full text-center text-white">
-          <div>
-            <h1 className="text-4xl sm:text-5xl font-bold">Discover Your Next Adventure</h1>
-            <p className="mt-4 text-lg">Find the perfect tour for your next trip.</p>
-          </div>
+      <div className="relative mb-12">
+                <Image
+            src={
+              locationId
+                ? (locations.find((loc) => loc.id === locationId)?.image ?? "/98.jpg")
+                : "/98.jpg"
+            }
+            alt="Hero Image"
+            width={1600}
+            height={600}
+            className="w-full h-[500px] object-cover"
+          />
+
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
+          <h1 className="text-5xl font-bold">Discover Your Next Adventure</h1>
+          <p className="text-lg mt-4">Explore amazing destinations worldwide</p>
+          <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-lg text-lg transition-all">
+            Explore Now
+          </button>
         </div>
       </div>
 
-      {/* Tabs Section */}
-      <div className="bg-white py-6 mt-6 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Tab Navigation */}
-          <div className="flex space-x-6 mb-6">
-            {tabs.map((tab, index) => (
+      {/* Location Selector */}
+      <div className="flex justify-center items-center -mt-28 px-6 md:px-10 lg:px-16 mb-8">
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={4}
+          breakpoints={{
+            320: { slidesPerView: 2, spaceBetween: 10 },
+            768: { slidesPerView: 3, spaceBetween: 15 },
+            1024: { slidesPerView: 4, spaceBetween: 20 },
+          }}
+          className="w-full"
+        >
+          {locations.map((location) => (
+            <SwiperSlide key={location.id}>
               <button
-                key={index}
-                onClick={() => setActiveTab(index)}
-                className={`text-lg font-medium py-2 px-4 rounded-md ${
-                  activeTab === index ? 'border-b-4 border-blue-500 text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                onClick={() => setLocationId(location.id)}
+                className={`px-4 py-5 rounded-lg   transition-all text-center font-bold text-2xl w-full ${
+                  locationId === location.id
+                    ? "bg-white text-primary  border-blue-700 shadow-xl scale-105"
+                    : " text-white "
                 }`}
               >
-                {tab.title}
+                {location.title}
               </button>
-            ))}
-          </div>
-
-          {/* Tab Content */}
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <p className="text-xl text-gray-700">{tabs[activeTab]?.desc || 'No description available'}</p>
-          </div>
-        </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
+
+      {/* Tours Section */}
+      {loading ? (
+        <div className="text-center text-lg text-gray-600">Loading tours...</div>
+      ) : error ? (
+        <div className="text-center text-lg text-red-600">{error}</div>
+      ) : tours.length === 0 ? (
+        <div className="text-center text-lg text-gray-600">No tours available for the selected location</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-16">
+          {tours.map((tour) => (
+            <Link href={`/tour/${tour.id}`} key={tour.id}>
+              <div className="bg-white  rounded-lg overflow-hidden border  transition-transform transform  relative w-full">
+                <div className="absolute top-2 right-2 z-10  p-2 rounded-full shadow cursor-pointer">
+                  <FaHeart className="text-white hover:text-red-500 transition" size={20} />
+                </div>
+                <Image
+                  src={tour.image}
+                  alt={tour.title}
+                  width={400}
+                  height={200}
+                  className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 truncate">{tour.title}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{tour.location?.name || "Unknown Location"}</p>
+                  <p className="text-gray-600 mt-2">{tour.duration}</p>
+                  <div className="flex items-center mt-3">
+                    <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
+                    <span className="ml-2 text-sm text-gray-500">({tour.review_score.total_review} reviews)</span>
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-400 line-through">
+                      {tour.sale_price ? `$${tour.price}` : ""}
+                    </p>
+                    <p className="text-lg font-bold text-primary">
+                      From ${tour.sale_price || tour.price} <span className="text-sm">per person</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default TabHero;
+}
