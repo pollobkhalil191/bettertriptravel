@@ -37,7 +37,7 @@ export default function NavBar() {
     { title: "Home", path: "/" },
     { title: "About Us", path: "#" },
     { title: "Tours", path: "/tour" },
-    { title: "Contact", path: "/contactUs" },
+    { title: "Contact", path: "contactUs" },
     { title: "Blog", path: "#" },
   ];
 

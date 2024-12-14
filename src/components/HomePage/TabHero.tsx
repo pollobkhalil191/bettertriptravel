@@ -4,6 +4,7 @@ import Link from "next/link";
 import { fetchToursByLocation } from "../../Api/tourService";
 import { FaHeart } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules"; // Correct import for Navigation
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -80,17 +81,17 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <div className="relative mb-12">
-                <Image
-            src={
-              locationId
-                ? (locations.find((loc) => loc.id === locationId)?.image ?? "/98.jpg")
-                : "/98.jpg"
-            }
-            alt="Hero Image"
-            width={1600}
-            height={600}
-            className="w-full h-[500px] object-cover"
-          />
+        <Image
+          src={
+            locationId
+              ? locations.find((loc) => loc.id === locationId)?.image ?? "/98.jpg"
+              : "/98.jpg"
+          }
+          alt="Hero Image"
+          width={1600}
+          height={600}
+          className="w-full h-[500px] object-cover"
+        />
 
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
@@ -105,6 +106,8 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
       {/* Location Selector */}
       <div className="flex justify-center items-center -mt-28 px-6 md:px-10 lg:px-16 mb-8">
         <Swiper
+          modules={[Navigation]} // Attach Navigation module
+          navigation={true} // Enable navigation arrows
           spaceBetween={20}
           slidesPerView={4}
           breakpoints={{
@@ -118,10 +121,10 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
             <SwiperSlide key={location.id}>
               <button
                 onClick={() => setLocationId(location.id)}
-                className={`px-4 py-5 rounded-lg   transition-all text-center font-bold text-2xl w-full ${
+                className={`px-4 py-5 rounded-lg transition-all text-center font-bold text-2xl w-full ${
                   locationId === location.id
-                    ? "bg-white text-primary  border-blue-700 shadow-xl scale-105"
-                    : " text-white "
+                    ? "bg-white text-primary border-blue-700 shadow-xl scale-105"
+                    : "text-white"
                 }`}
               >
                 {location.title}
@@ -137,13 +140,15 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
       ) : error ? (
         <div className="text-center text-lg text-red-600">{error}</div>
       ) : tours.length === 0 ? (
-        <div className="text-center text-lg text-gray-600">No tours available for the selected location</div>
+        <div className="text-center text-lg text-gray-600">
+          No tours available for the selected location
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-16">
           {tours.map((tour) => (
             <Link href={`/tour/${tour.id}`} key={tour.id}>
-              <div className="bg-white  rounded-lg overflow-hidden border  transition-transform transform  relative w-full">
-                <div className="absolute top-2 right-2 z-10  p-2 rounded-full shadow cursor-pointer">
+              <div className="bg-white rounded-lg overflow-hidden border transition-transform transform relative w-full">
+                <div className="absolute top-2 right-2 z-10 p-2 rounded-full shadow cursor-pointer">
                   <FaHeart className="text-white hover:text-red-500 transition" size={20} />
                 </div>
                 <Image
@@ -155,18 +160,25 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800 truncate">{tour.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{tour.location?.name || "Unknown Location"}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {tour.location?.name || "Unknown Location"}
+                  </p>
                   <p className="text-gray-600 mt-2">{tour.duration}</p>
                   <div className="flex items-center mt-3">
-                    <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
-                    <span className="ml-2 text-sm text-gray-500">({tour.review_score.total_review} reviews)</span>
+                    <span className="text-yellow-500">
+                      {"★".repeat(Math.round(tour.review_score.score_total))}
+                    </span>
+                    <span className="ml-2 text-sm text-gray-500">
+                      ({tour.review_score.total_review} reviews)
+                    </span>
                   </div>
                   <div className="mt-3">
                     <p className="text-sm text-gray-400 line-through">
                       {tour.sale_price ? `$${tour.price}` : ""}
                     </p>
                     <p className="text-lg font-bold text-primary">
-                      From ${tour.sale_price || tour.price} <span className="text-sm">per person</span>
+                      From ${tour.sale_price || tour.price}{" "}
+                      <span className="text-sm">per person</span>
                     </p>
                   </div>
                 </div>
