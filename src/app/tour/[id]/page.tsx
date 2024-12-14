@@ -48,7 +48,9 @@ async function getTourDetails(id: string): Promise<Tour | null> {
 }
 
 // Generate Metadata for the Page
-export async function generateMetadata({ id }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = params; // Extract `id` from `params`
+
   const tour = await getTourDetails(id);
 
   if (!tour) {
@@ -183,7 +185,7 @@ const TourDetails = async ({ params }: PageProps) => {
           Location: {location.name}
         </p>
         <p className="text-sm text-gray-500">{address}</p>
-        <CheckAvailability tourId={id}/>
+        <CheckAvailability tourId={id} />
       </div>
     </div>
   );
