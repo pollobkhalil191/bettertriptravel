@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import TourCard from "@/components/TourCard";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
 const TourPage = () => {
   const [locationId, setLocationId] = useState<number | null>(null); // Define state for locationId
@@ -20,13 +19,20 @@ const TourPage = () => {
   }, [parsedLocationId]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      {/* Pass locationId and setLocationId to the TourCard component */}
-      <div>
+    <div>
+      {/* Wrap the TourCard component in a Suspense boundary */}
+      <Suspense fallback={<div>Loading...</div>}>
         <TourCard locationId={locationId} setLocationId={setLocationId} />
-      </div>
-    </Suspense>
+      </Suspense>
+    </div>
   );
 };
 
-export default TourPage;
+// Wrap the entire page in Suspense to resolve the error
+const TourPageWithSuspense = () => (
+  <Suspense fallback={<div>Loading page...</div>}>
+    <TourPage />
+  </Suspense>
+);
+
+export default TourPageWithSuspense;
