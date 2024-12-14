@@ -33,13 +33,14 @@ interface TourApiResponse {
 
 // Page Props Interface for Dynamic Route
 interface PageProps {
-  params: { id: string }; // Correct type for Next.js dynamic route parameters
+  params: Promise<{ id: string }>; // Correct type for Next.js dynamic route parameters
 }
 
 // Fetch Tour Details
 async function getTourDetails(id: string): Promise<Tour | null> {
   try {
-    const response: TourApiResponse = await fetchTourDetails(id);
+    const response: TourApiResponse = await fetchTourDetails(id)
+;
     return response?.data || null;
   } catch (error) {
     console.error("Error fetching tour details:", error);
@@ -49,9 +50,11 @@ async function getTourDetails(id: string): Promise<Tour | null> {
 
 // Generate Metadata for the Page
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = params; // Extract `id` from `params`
+  // Await params to ensure we can access the id properly
+  const { id } = await params;
 
-  const tour = await getTourDetails(id);
+  const tour = await getTourDetails(id)
+;
 
   if (!tour) {
     return {
@@ -68,15 +71,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 // Main Component
 const TourDetails = async ({ params }: PageProps) => {
-  const { id } = params;
+  // Await params before accessing its properties
+  const { id } = await params; // Now waiting for the promise to resolve
 
-  // Validate params
   if (!id) {
     notFound();
     return null;
   }
 
-  const tour = await getTourDetails(id);
+  const tour = await getTourDetails(id)
+;
 
   if (!tour) {
     notFound();

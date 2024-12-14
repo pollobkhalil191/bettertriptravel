@@ -17,8 +17,8 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
   const [language, setLanguage] = useState("english");
   const [isParticipantModalOpen, setParticipantModalOpen] = useState(false); // Modal visibility state
 
-  // Handle participant count change
-  const handleParticipantChange = (category: string, action: string) => {
+  // Ensure `category` is one of the keys in `participants`
+  const handleParticipantChange = (category: "adult" | "children" | "infant", action: "increment" | "decrement") => {
     setParticipants((prev) => {
       const updated = { ...prev };
       if (action === "increment") updated[category] += 1;
@@ -38,7 +38,6 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
       <h2 className="text-lg font-bold mb-4">Select participants, date, and language</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Participant Selector */}
         <div
           className="relative flex items-center bg-white text-black rounded-lg shadow px-4 py-2 cursor-pointer"
           onClick={() => setParticipantModalOpen(!isParticipantModalOpen)}
@@ -47,7 +46,6 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
           <span>{`${participants.adult} Adult(s), ${participants.children} Child(ren), ${participants.infant} Infant(s)`}</span>
         </div>
 
-        {/* Modal for Participant Selection */}
         {isParticipantModalOpen && (
           <div className="absolute z-10 bg-white border rounded-lg shadow-lg mt-2 w-full p-4">
             <div className="flex justify-between items-center mb-4">
@@ -120,7 +118,6 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
           </div>
         )}
 
-        {/* Date Selector */}
         <div className="flex items-center bg-white text-black rounded-lg shadow px-4 py-2">
           <FaCalendarAlt className="mr-2 text-lg" />
           <input
@@ -131,7 +128,7 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
           />
         </div>
 
-        {/* Language Selector */}
+ 
         <div className="flex items-center bg-white text-black rounded-lg shadow px-4 py-2">
           <FaGlobe className="mr-2 text-lg" />
           <select
