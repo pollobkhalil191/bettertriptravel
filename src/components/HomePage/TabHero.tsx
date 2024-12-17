@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,9 +55,15 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
         setLoading(true);
         const response = await fetch("https://btt.triumphdigital.co.th/api/locations");
         const locationData = await response.json();
-        setLocations(locationData.data || []);
+        const fetchedLocations = locationData.data || [];
+        setLocations(fetchedLocations);
 
-        const locationIdToUse = locationId ?? 0;
+        // Set the first location as the default active tab if none is selected
+        if (fetchedLocations.length > 0 && locationId === null) {
+          setLocationId(fetchedLocations[0].id);
+        }
+
+        const locationIdToUse = locationId ?? fetchedLocations[0]?.id ?? 0;
         const tourResponse: TourResponse = await fetchToursByLocation(locationIdToUse);
 
         if (tourResponse?.data && Array.isArray(tourResponse.data) && tourResponse.data.length > 0) {
@@ -77,21 +84,21 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
     fetchData();
   }, [locationId]);
 
+  const currentLocationImage = locations.find((loc) => loc.id === locationId)?.image;
+
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <div className="relative mb-12">
-        <Image
-          src={
-            locationId
-              ? locations.find((loc) => loc.id === locationId)?.image ?? "/98.jpg"
-              : "/98.jpg"
-          }
-          alt="Hero Image"
-          width={1600}
-          height={600}
-          className="w-full h-[500px] object-cover"
-        />
+        {currentLocationImage && (
+          <Image
+            src={currentLocationImage}
+            alt="Hero Image"
+            width={1600}
+            height={600}
+            className="w-full h-[80vh] object-cover"
+          />
+        )}
 
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
@@ -123,7 +130,7 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
                 onClick={() => setLocationId(location.id)}
                 className={`px-4 py-5 rounded-lg transition-all text-center font-bold text-2xl w-full ${
                   locationId === location.id
-                    ? "bg-white text-primary border-blue-700 shadow-xl scale-105"
+                    ? "bg-white text-primary border-blue-700 "
                     : "text-white"
                 }`}
               >

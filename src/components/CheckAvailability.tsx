@@ -149,6 +149,7 @@ const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
           Check availability
         </button>
       </form>
+      
     </div>
   );
 };
