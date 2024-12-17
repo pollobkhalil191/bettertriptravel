@@ -15,7 +15,7 @@ import {
   FaGlobe,
   FaMoon,
   FaQuestionCircle,
-  FaDownload,
+  
 } from "react-icons/fa";
 import SearchField from "../SearchFilter";
 
@@ -50,7 +50,7 @@ export default function NavBar() {
     { title: "Language", icon: <FaGlobe />, value: "language" },
     { title: "Appearance", icon: <FaMoon />, value: "appearance" },
     { title: "Support", icon: <FaQuestionCircle />, value: "support" },
-    { title: "Download the app", icon: <FaDownload />, value: "download" },
+    
     { title: "Log out", icon: <FaSignOutAlt />, value: "logout" },
   ];
 
@@ -114,20 +114,28 @@ export default function NavBar() {
           </button>
           {/* Dropdown Content with Fixed Size */}
           <div
-            className="absolute right-0 mt-2 w-[416px] h-[416px] bg-white shadow-lg rounded-lg p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50"
-            style={{ width: '416px', height: '416px' }} // Set fixed width and height
+            className="absolute right-0 mt-2 w-[416px] h-[416px] bg-white shadow-lg rounded-lg p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50"
+            style={{
+              width: "416px", 
+              height: "416px", 
+              overflowY: "auto", 
+              borderRadius: "12px",
+            }}
           >
+            <div className="font-bold text-lg mb-4">Profile</div>
             {dropdownItems.map((item) => (
               <div
                 key={item.value}
-                className={`flex items-center gap-2 p-2 rounded-md cursor-pointer ${
+                className={`flex items-center gap-3 p-3 rounded-md cursor-pointer transition-colors duration-200 ease-in-out ${
                   selectedItem === item.value
                     ? "bg-blue-100 text-blue-600"
                     : "hover:bg-gray-100 text-gray-700"
                 }`}
                 onClick={() => setSelectedItem(item.value)}
               >
-                {item.icon} <span>{item.title}</span>
+                <span className="text-xl">{item.icon}</span>
+                <span className="flex-1">{item.title}</span>
+                <span className="text-sm"></span>
               </div>
             ))}
           </div>
