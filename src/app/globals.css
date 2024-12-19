@@ -7,6 +7,35 @@
   --foreground: #171717;
 }
 
+@font-face {
+  font-family: "GT Easti";
+  src: url("/fonts/GT-Eesti-Display-Light-Trial.otf") format("opentype");
+  font-weight: 300; /* Light */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Easti";
+  src: url("/fonts/GT-Eesti-Display-Medium-Trial.otf") format("opentype");
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Easti";
+  src: url("/fonts/GT-Eesti-Display-Regular.otf") format("opentype");
+  font-weight: 500; /* Medium */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GT Easti";
+  src: url("/fonts/GT-Easti-Display-Bold-Trial.otf") format("opentype");
+  font-weight: 700; /* Bold */
+  font-style: normal;
+}
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -17,7 +46,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "GT Easti";
 }
 
 

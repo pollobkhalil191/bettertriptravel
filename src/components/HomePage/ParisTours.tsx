@@ -94,7 +94,7 @@ const ParisTours = () => {
             {tours.map((tour) => (
               <SwiperSlide key={tour.id}>
                 <Link href={`/tour/${tour.id}`}>
-                  <div className="tour-card bg-white shadow-sm rounded-lg overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
+                  <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
                     {/* Favorite Icon */}
                     <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
                       <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />

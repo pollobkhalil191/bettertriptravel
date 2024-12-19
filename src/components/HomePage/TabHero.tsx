@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules"; // Correct import for Navigation
 import "swiper/css";
 import "swiper/css/navigation";
+import { motion } from "framer-motion"; // Import motion from Framer Motion
 
 interface Location {
   id: number;
@@ -46,19 +47,16 @@ interface TourCardProps {
 export default function TourCard({ locationId, setLocationId }: TourCardProps) {
   const [tours, setTours] = useState<Tour[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
         const response = await fetch("https://btt.triumphdigital.co.th/api/locations");
         const locationData = await response.json();
         const fetchedLocations = locationData.data || [];
         setLocations(fetchedLocations);
 
-        // Set the first location as the default active tab if none is selected
         if (fetchedLocations.length > 0 && locationId === null) {
           setLocationId(fetchedLocations[0].id);
         }
@@ -76,8 +74,6 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
       } catch (err) {
         setError("Failed to fetch data");
         console.error("Error fetching tours:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -88,9 +84,14 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Hero Section */}
-      <div className="relative mb-12">
-        {currentLocationImage && (
+      {/* Hero Section with Enhanced Animation */}
+      <motion.div
+        className="relative mb-12"
+        initial={{ opacity: 0, y: -50 }} // Start off-screen
+        animate={{ opacity: 1, y: 0 }} // Animate to original position
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      >
+        {currentLocationImage ? (
           <Image
             src={currentLocationImage}
             alt="Hero Image"
@@ -98,23 +99,25 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
             height={600}
             className="w-full h-[80vh] object-cover"
           />
-        )}
-
+        ) : null}
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
-          <h1 className="text-5xl font-bold">Discover Your Next Adventure</h1>
-          <p className="text-lg mt-4">Explore amazing destinations worldwide</p>
-          <button className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg shadow-lg text-lg transition-all">
-            Explore Now
-          </button>
+          <h1 className="text-5xl font-gt-easti font-bold">Discover Your Next Adventure</h1>
+          <p className="text-lg font-gt-easti mt-4">Explore amazing destinations worldwide</p>
+          
         </div>
-      </div>
+      </motion.div>
 
-      {/* Location Selector */}
-      <div className="flex justify-center items-center -mt-28 px-6 md:px-10 lg:px-16 mb-8">
+      {/* Location Selector with Animated Swiping Effect */}
+      <motion.div
+        className="flex justify-center items-center -mt-28 px-6 md:px-10 lg:px-16 mb-8"
+        initial={{ opacity: 0, y: 50 }} // Start with opacity 0 and move from below
+        animate={{ opacity: 1, y: 0 }} // Fade in and slide to original position
+        transition={{ duration: 1.2, ease: "easeOut" }}
+      >
         <Swiper
-          modules={[Navigation]} // Attach Navigation module
-          navigation={true} // Enable navigation arrows
+          modules={[Navigation]}
+          navigation={true}
           spaceBetween={20}
           slidesPerView={4}
           breakpoints={{
@@ -126,43 +129,66 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
         >
           {locations.map((location) => (
             <SwiperSlide key={location.id}>
-              <button
+              <motion.button
                 onClick={() => setLocationId(location.id)}
                 className={`px-4 py-5 rounded-lg transition-all text-center font-bold text-2xl w-full ${
                   locationId === location.id
-                    ? "bg-white text-primary border-blue-700 "
+                    ? "bg-white text-primary border-blue-700"
                     : "text-white"
                 }`}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
               >
                 {location.title}
-              </button>
+              </motion.button>
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
+      </motion.div>
 
-      {/* Tours Section */}
-      {loading ? (
-        <div className="text-center text-lg text-gray-600">Loading tours...</div>
-      ) : error ? (
-        <div className="text-center text-lg text-red-600">{error}</div>
+      {/* Tours Section with Enhanced Animations and Hover Effects */}
+      {error ? (
+        <motion.div
+          className="text-center text-lg text-red-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          {error}
+        </motion.div>
       ) : tours.length === 0 ? (
-        <div className="text-center text-lg text-gray-600">
+        <motion.div
+          className="text-center text-lg text-gray-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
           No tours available for the selected location
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-16">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
           {tours.map((tour) => (
             <Link href={`/tour/${tour.id}`} key={tour.id}>
-              <div className="bg-white rounded-lg overflow-hidden border transition-transform transform relative w-full">
+              <motion.div
+                className="bg-white rounded-lg overflow-hidden border transition-transform transform relative w-full"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+              >
                 <div className="absolute top-2 right-2 z-10 p-2 rounded-full shadow cursor-pointer">
                   <FaHeart className="text-white hover:text-red-500 transition" size={20} />
                 </div>
                 <Image
                   src={tour.image}
                   alt={tour.title}
-                  width={400}
-                  height={200}
+                  width={1600}
+                  height={600}
                   className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
                 />
                 <div className="p-4">
@@ -189,10 +215,10 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </Link>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );
