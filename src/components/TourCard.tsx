@@ -71,7 +71,7 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   }, [locationId]);
 
   return (
-    <div className="px-4 py-8">
+    <div className="px-5  py-8 lg:px-28">
       {/* Location Tabs */}
       <div className="flex gap-4 mb-6 border-b-2 pb-4">
         {locations.map((location) => (
@@ -94,10 +94,10 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
       {!loading && tours.length === 0 && !error && <div>No tours available</div>}
 
       {/* Tour Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4  gap-6">
         {tours.map((tour) => (
           <Link href={`/tour/${tour.id}`} key={tour.id}>
-            <div className="tour-card bg-white shadow-sm rounded-lg overflow-hidden transform transition-transform duration-300 ease-in-out border relative">
+            <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative">
               <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
                 <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
               </div>

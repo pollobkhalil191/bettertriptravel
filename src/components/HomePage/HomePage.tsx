@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 
 import Destination from "./Destination";
-import TopPromotion from "./TopPromotion";
+
 import TabHero from "./TabHero";
 import ParisTours from "./ParisTours";
 
@@ -22,8 +22,10 @@ const HomePage = () => {
       <TabHero locationId={locationId} setLocationId={setLocationId} />
       </div>
 
-      {/* Top Promotion Section */}
-      <TopPromotion />
+      <div className="">
+
+
+      
 
       {/* Paris Tours Section */}
       <div className="lg:px-16">
@@ -32,7 +34,9 @@ const HomePage = () => {
 
       {/* Destination Section */}
       <Destination />
+      </div>
     </>
+    
   );
 };
 
