@@ -1,22 +1,23 @@
+// src/app/register/page.tsx
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '../../hooks/useAuth';
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { register } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await register(email, password);
       router.push('/');
     } catch (error) {
-      console.error('Login failed');
+      console.error('Registration failed');
     }
   };
 
@@ -48,22 +49,11 @@ const LoginPage = () => {
           />
         </div>
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
-          Log In
+          Register
         </button>
       </form>
-      <div className="mt-4 text-center">
-        <p className="text-sm">
-          Dont have an account?{' '}
-          <button
-            onClick={() => router.push('/register')}
-            className="text-blue-500 hover:underline"
-          >
-            Sign Up
-          </button>
-        </p>
-      </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

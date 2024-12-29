@@ -28,7 +28,7 @@ const HomePage = () => {
       
 
       {/* Paris Tours Section */}
-      <div className="lg:px-16">
+      <div className="lg:px-28">
         <ParisTours />
       </div>
 

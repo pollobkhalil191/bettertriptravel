@@ -68,7 +68,7 @@ const ParisTours = () => {
   const isSliderActive = tours.length > 4;
 
   return (
-    <div className="px-4 py-8">
+    <div className="px-4 lg:px-0 py-8">
       <h2 className="text-2xl font-bold mb-6">Explore more in New York</h2>
       <div className="mb-8">
        

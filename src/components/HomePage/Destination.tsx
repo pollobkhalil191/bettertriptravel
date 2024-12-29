@@ -87,7 +87,7 @@ export default function Destination() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <section className="py-10 px-5 lg:px-20">
+    <section className="py-10 px-5 lg:px-28">
       <h2 className="text-2xl font-bold text-left mb-6">
         Awe-inspiring destinations around the world
       </h2>

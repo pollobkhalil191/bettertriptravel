@@ -5,7 +5,6 @@ import Link from "next/link";
 import { fetchToursByLocation } from "../../Api/tourService";
 import { FaHeart } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules"; // Correct import for Navigation
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -82,9 +81,9 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
   const currentLocationImage = locations.find((loc) => loc.id === locationId)?.image;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <div className="relative mb-12">
+      <div className="relative mb-12 w-full">
         {currentLocationImage ? (
           <Image
             src={currentLocationImage}
@@ -102,10 +101,8 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
       </div>
 
       {/* Location Selector */}
-      <div className="flex justify-center items-center -mt-28 px-6 md:px-10 lg:px-16 mb-8">
+      <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-28 mb-8 w-full">
         <Swiper
-          modules={[Navigation]}
-          navigation={true}
           spaceBetween={10}
           slidesPerView={4}
           breakpoints={{
@@ -113,16 +110,14 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
             768: { slidesPerView: 3, spaceBetween: 15 },
             1024: { slidesPerView: 4, spaceBetween: 20 },
           }}
-          className="w-full px-20"
+          className="w-full px-28"
         >
           {locations.map((location) => (
             <SwiperSlide key={location.id}>
               <button
                 onClick={() => setLocationId(location.id)}
-                className={`py-5 px-16 rounded-lg text-center font-bold text-2xl ${
-                  locationId === location.id
-                    ? "bg-white text-primary"
-                    : "text-white"
+                className={` w-full py-5 px-16 rounded-lg text-center flex justify-center font-bold text-2xl ${
+                  locationId === location.id ? "bg-white text-primary" : "text-white"
                 }`}
               >
                 {location.title}
@@ -140,7 +135,7 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
           No tours available for the selected location
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-28">
           {tours.map((tour) => (
             <Link href={`/tour/${tour.id}`} key={tour.id}>
               <div className="bg-white rounded-lg overflow-hidden border relative w-full">

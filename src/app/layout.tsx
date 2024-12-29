@@ -3,7 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/Shared/NavBar";
 import Footer from "@/components/Shared/Footer";
-import { AuthProvider } from "@/context/AuthContext"; // Import AuthProvider
+import { AuthProvider } from "@/context/AuthContext";
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,9 @@ export default function RootLayout({
     <html lang="en" data-theme="betterTrip">
       <body className={inter.className}>
         {/* Wrap the app with AuthProvider */}
+      
         <AuthProvider>
+
           {/* NavBar visible on all pages */}
           <NavBar />
           
@@ -30,7 +34,7 @@ export default function RootLayout({
 
           {/* Footer visible on all pages */}
           <Footer />
-        </AuthProvider>
+          </AuthProvider>
       </body>
     </html>
   );

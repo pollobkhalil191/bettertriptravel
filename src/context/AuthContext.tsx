@@ -1,87 +1,104 @@
+
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
 
-type User = {
+// Define a type for the user object based on your API response
+interface User {
+  id: number;
+  name: string;
   email: string;
-  token: string;
-};
+  // Add other fields as per your API response
+}
 
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  isModalOpen: boolean; // Add modal state here
-  openModal: () => void; // Function to open modal
-  closeModal: () => void; // Function to close modal
-};
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
+  isAuthenticated: boolean;
+}
 
-type AxiosError = {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-  message: string;
-};
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const router = useRouter();
-
-  useEffect(() => {
-    // Check for existing token in localStorage
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setUser({ email: "", token }); // Populate user based on token
-    }
-  }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.get(
-        `https://btt.triumphdigital.co.th/api/auth/login?email=${email}&password=${password}&device_name=Desktop`
-      );
-
-      const token = response.data.token;
-      setUser({ email, token });
-      localStorage.setItem("authToken", token);
-
-      // Redirect to the home page or dashboard
-      router.push("/");
+      const response = await axios.post('https://btt.triumphdigital.co.th/api/auth/login', {
+        email,
+        password,
+        device_name: 'Desktop',
+      });
+      localStorage.setItem('token', response.data.token);
+      setUser(response.data.user); // Make sure the user response is correctly typed
+      setIsAuthenticated(true);
     } catch (error) {
-      const axiosError = error as AxiosError;
-      console.error("Login failed:", axiosError.response?.data?.message || axiosError.message);
-      throw new Error(axiosError.response?.data?.message || "Login failed.");
+      console.error('Error logging in:', error);
+      throw error;
+    }
+  };
+
+  const register = async (email: string, password: string) => {
+    try {
+      const response = await axios.post('https://btt.triumphdigital.co.th/api/auth/register', {
+        email,
+        password,
+      });
+      localStorage.setItem('token', response.data.token);
+      setUser(response.data.user); // Ensure this is typed correctly
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error registering:', error);
+      throw error;
     }
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     setUser(null);
-    localStorage.removeItem("authToken");
-    router.push("/login");
+    setIsAuthenticated(false);
   };
 
-  // Modal control functions
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const changePassword = async (oldPassword: string, newPassword: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://btt.triumphdigital.co.th/api/auth/change-password',
+        { old_password: oldPassword, new_password: newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log('Password changed successfully');
+    } catch (error) {
+      console.error('Error changing password:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios
+        .get('https://btt.triumphdigital.co.th/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUser(response.data); // Ensure this response is typed correctly
+          setIsAuthenticated(true);
+        })
+        .catch(() => {
+          setIsAuthenticated(false);
+        });
+    }
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isModalOpen, openModal, closeModal }}>
+    <AuthContext.Provider value={{ user, login, register, logout, changePassword, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };
