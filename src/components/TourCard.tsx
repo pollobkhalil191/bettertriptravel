@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchToursByLocation } from "../Api/tourService";
+import { fetchAllToursByLocation } from "../Api/tourService";
 import { FaHeart } from "react-icons/fa";
 
 interface ReviewScore {
@@ -15,14 +15,18 @@ interface Tour {
   id: number;
   title: string;
   image: string;
+ 
   duration: string;
   price: number;
   sale_price?: number;
   review_score: ReviewScore;
+ 
   location?: {
     name: string;
   };
 }
+
+
 
 interface TourResponse {
   data: Tour[];
@@ -30,7 +34,7 @@ interface TourResponse {
 
 interface TourCardProps {
   locationId: number | null;
-  setLocationId: React.Dispatch<React.SetStateAction<number | null>>; // Add setLocationId to props
+  setLocationId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const locations = [
@@ -38,6 +42,7 @@ const locations = [
   { id: 2, name: "New York" },
   { id: 1, name: "Paris" },
   { id: 3, name: "Tokyo" },
+  { id: 4, name: "Dubai" },
 ];
 
 const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
@@ -49,9 +54,11 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
     const fetchTours = async () => {
       try {
         setLoading(true);
-        const locationIdToUse = locationId ?? 0;
-        const data: TourResponse = await fetchToursByLocation(locationIdToUse);
-        
+        const locationIdToUse = locationId ?? 0; // Use 0 to fetch all tours
+        const data: TourResponse = await fetchAllToursByLocation(locationIdToUse);
+  
+        console.log("API Response:", data); // Debugging API response
+  
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
           setTours(data.data);
           setError(null);
@@ -66,21 +73,24 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
         setLoading(false);
       }
     };
-
+  
     fetchTours();
   }, [locationId]);
+  
+  
 
   return (
-    <div className="px-5  py-8 lg:px-28">
+    <div className="px-5 py-8 lg:px-28">
       {/* Location Tabs */}
       <div className="flex gap-4 mb-6 border-b-2 pb-4">
         {locations.map((location) => (
           <button
             key={location.id}
-            onClick={() => setLocationId(location.id)} // Use setLocationId to update the state
-            className={`px-4 py-2 text-sm font-medium rounded ${locationId === location.id
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+            onClick={() => setLocationId(location.id)}
+            className={`px-4 py-2 text-sm font-medium rounded ${
+              locationId === location.id
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
             }`}
           >
             {location.name}
@@ -94,12 +104,15 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
       {!loading && tours.length === 0 && !error && <div>No tours available</div>}
 
       {/* Tour Cards */}
-      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4  gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {tours.map((tour) => (
           <Link href={`/tour/${tour.id}`} key={tour.id}>
             <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative">
               <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
-                <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
+                <FaHeart
+                  className="text-white hover:text-red-500 transition duration-200"
+                  size={20}
+                />
               </div>
               <div className="relative w-full h-[200px] overflow-hidden">
                 <Image
@@ -111,19 +124,26 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
                 />
               </div>
               <div className="p-4">
-                <p className="text-sm font-medium text-gray-500">{tour.location?.name || "Unknown Location"}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  {tour.location?.name || "Unknown Location"}
+                </p>
                 <h3 className="text-xl font-semibold">{tour.title}</h3>
                 <p className="text-gray-600 mt-2">{tour.duration}</p>
                 <div className="mt-2 flex items-center">
-                  <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
-                  <span className="ml-1 text-gray-500">({tour.review_score.total_review} reviews)</span>
+                  <span className="text-yellow-500">
+                    {"★".repeat(Math.round(tour.review_score.score_total))}
+                  </span>
+                  <span className="ml-1 text-gray-500">
+                    ({tour.review_score.total_review} reviews)
+                  </span>
                 </div>
                 <div className="mt-2 items-center">
                   <p className="text-sm text-gray-400 line-through">
                     {tour.sale_price ? `$${tour.price}` : ""}
                   </p>
                   <p className="text-lg font-bold text-textPrimary">
-                    From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
+                    From {`$${tour.sale_price || tour.price}`}{" "}
+                    <span className="text-sm">per person</span>
                   </p>
                 </div>
               </div>

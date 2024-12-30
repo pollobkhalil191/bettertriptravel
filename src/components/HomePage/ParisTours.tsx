@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchToursByLocation } from '../../Api/tourService';
+import { fetchAllToursByLocation } from '../../Api/tourService';
 import { FaHeart } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -42,7 +42,7 @@ const ParisTours = () => {
 
         // Replace `2` with the actual location_id for Paris
         const locationIdForParis = 2; // Example location_id for Paris
-        const data: TourResponse = await fetchToursByLocation(locationIdForParis);
+        const data: TourResponse = await fetchAllToursByLocation(locationIdForParis);
 
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
           setTours(data.data); // Filtered tours for Paris

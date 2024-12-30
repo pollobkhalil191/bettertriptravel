@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import TourCard from "@/components/TourCard";
 import { useSearchParams } from "next/navigation";
+import TourFilters from "@/components/tourFilters";
 
 const TourPage = () => {
   const [locationId, setLocationId] = useState<number | null>(null); // Define state for locationId
@@ -22,6 +23,9 @@ const TourPage = () => {
     <div>
       {/* Wrap the TourCard component in a Suspense boundary */}
       <Suspense fallback={<div>Loading...</div>}>
+     <TourFilters locationId={null} setLocationId={function (id: number | null): void {
+          throw new Error("Function not implemented.");
+        } }/>
         <TourCard locationId={locationId} setLocationId={setLocationId} />
       </Suspense>
     </div>

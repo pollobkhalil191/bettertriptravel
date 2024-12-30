@@ -7,15 +7,19 @@ import { Metadata } from "next";
 
 // Define the Tour details type
 interface Tour {
+  id: number;
+  category: { name: string };
   title: string;
   price: number;
   sale_price?: number;
   discount_percent?: string;
   content: string;
+  
   address: string;
   location: {
     name: string;
   };
+  
   gallery: string[];
   banner_image?: string;
   video?: string;
@@ -161,6 +165,9 @@ const TourDetails = async ({ params }: PageProps) => {
               __html: content || "No description available.",
             }}
           />
+          <p className="text-xl font-semibold text-gray-800">
+          type: {tour.category.name}
+        </p>
         </div>
 
         <div className="flex flex-col lg:w-1/3 space-y-6 lg:space-y-8">
@@ -188,6 +195,8 @@ const TourDetails = async ({ params }: PageProps) => {
         <p className="text-xl font-semibold text-gray-800">
           Location: {location.name}
         </p>
+        
+        
         <p className="text-sm text-gray-500">{address}</p>
         <CheckAvailability tourId={id} />
       </div>

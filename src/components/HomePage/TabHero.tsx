@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchToursByLocation } from "../../Api/tourService";
+import { fetchAllToursByLocation } from "../../Api/tourService";
 import { FaHeart } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -60,7 +60,7 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
         }
 
         const locationIdToUse = locationId ?? fetchedLocations[0]?.id ?? 0;
-        const tourResponse: TourResponse = await fetchToursByLocation(locationIdToUse);
+        const tourResponse: TourResponse = await fetchAllToursByLocation(locationIdToUse);
 
         if (tourResponse?.data && Array.isArray(tourResponse.data) && tourResponse.data.length > 0) {
           setTours(tourResponse.data);
