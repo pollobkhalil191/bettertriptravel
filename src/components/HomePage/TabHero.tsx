@@ -7,6 +7,9 @@ import { FaHeart } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
+import { motion } from "framer-motion";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css"; // Import carousel styles
 
 interface Location {
   id: number;
@@ -80,28 +83,50 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
 
   const currentLocationImage = locations.find((loc) => loc.id === locationId)?.image;
 
+  // Carousel settings for react-multi-carousel
+  const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 4,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 4,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <div className="relative mb-12 w-full">
-        {currentLocationImage ? (
-          <Image
-            src={currentLocationImage}
-            alt="Hero Image"
-            width={1600}
-            height={600}
-            className="w-full h-[80vh] object-cover"
-          />
-        ) : null}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
-          <h1 className="text-5xl font-gt-easti font-bold">Discover Your Next Adventure</h1>
-          <p className="text-lg font-gt-easti mt-4">Explore amazing destinations worldwide</p>
-        </div>
-      </div>
+      <div className="relative mb-12 w-full h-[80vh]">
+  {currentLocationImage ? (
+    <Image
+      src={currentLocationImage}
+      alt="Hero Image"
+      width={1600}
+      height={600}
+      className="w-full h-full object-cover"
+    />
+  ) : null}
+  <div className="flex items-center justify-center w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70">
+    <div className="text-center text-white">
+      <h1 className="text-5xl text-black font-gt-easti font-bold">Discover Your Next Adventure</h1>
+      <p className="text-lg font-gt-easti mt-4">Explore amazing destinations worldwide</p>
+    </div>
+  </div>
+</div>
+
 
       {/* Location Selector */}
-      <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-28 mb-8 w-full">
+      <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-[72px] mb-8 w-full">
         <Swiper
           spaceBetween={10}
           slidesPerView={4}
@@ -116,7 +141,7 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
             <SwiperSlide key={location.id}>
               <button
                 onClick={() => setLocationId(location.id)}
-                className={` w-full py-5 px-16 rounded-lg text-center flex justify-center font-bold text-2xl ${
+                className={`w-full py-5 px-16 rounded-lg text-center flex justify-center font-bold text-2xl ${
                   locationId === location.id ? "bg-white text-primary" : "text-white"
                 }`}
               >
@@ -135,47 +160,69 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
           No tours available for the selected location
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 md:px-10 lg:px-28">
-          {tours.map((tour) => (
-            <Link href={`/tour/${tour.id}`} key={tour.id}>
-              <div className="bg-white rounded-lg overflow-hidden border relative w-full">
-                <div className="absolute top-2 right-2 z-10 p-2 rounded-full shadow cursor-pointer">
-                  <FaHeart className="text-white hover:text-red-500 transition" size={20} />
-                </div>
-                <Image
-                  src={tour.image}
-                  alt={tour.title}
-                  width={1600}
-                  height={600}
-                  className="w-full h-full object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 truncate">{tour.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {tour.location?.name || "Unknown Location"}
-                  </p>
-                  <p className="text-gray-600 mt-2">{tour.duration}</p>
-                  <div className="flex items-center mt-3">
-                    <span className="text-yellow-500">
-                      {"★".repeat(Math.round(tour.review_score.score_total))}
-                    </span>
-                    <span className="ml-2 text-sm text-gray-500">
-                      ({tour.review_score.total_review} reviews)
-                    </span>
+        <div className="w-full px-6 md:px-10 lg:px-20">
+          <Carousel
+            responsive={responsive}
+            infinite={true}
+            autoPlay={true}
+            autoPlaySpeed={3000}
+            transitionDuration={500}
+            containerClass="carousel-container"
+            itemClass="px-3"
+          >
+            {tours.map((tour, index) => (
+              <motion.div
+                key={tour.id}
+                initial={{ x: -100, opacity: 0 }} // Start off-screen
+                animate={{ x: 0, opacity: 1 }} // Animate into position
+                transition={{
+                  delay: index * 0.2, // Stagger effect
+                  duration: 0.6,
+                  type: "spring",
+                  stiffness: 50,
+                }}
+              >
+                <Link href={`/tour/${tour.id}`}>
+                  <div className="bg-white rounded-lg overflow-hidden border relative w-full">
+                    <div className="absolute top-2 right-2 z-10 p-2 rounded-full shadow cursor-pointer">
+                      <FaHeart className="text-white hover:text-red-500 transition" size={20} />
+                    </div>
+                    <Image
+                      src={tour.image}
+                      alt={tour.title}
+                      width={1600}
+                      height={600}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-gray-800 truncate">{tour.title}</h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {tour.location?.name || "Unknown Location"}
+                      </p>
+                      <p className="text-gray-600 mt-2">{tour.duration}</p>
+                      <div className="flex items-center mt-3">
+                        <span className="text-yellow-500">
+                          {"★".repeat(Math.round(tour.review_score.score_total))}
+                        </span>
+                        <span className="ml-2 text-sm text-gray-500">
+                          ({tour.review_score.total_review} reviews)
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <p className="text-sm text-gray-400 line-through">
+                          {tour.sale_price ? `$${tour.price}` : ""}
+                        </p>
+                        <p className="text-lg font-bold text-primary">
+                          From ${tour.sale_price || tour.price}{" "}
+                          <span className="text-sm">per person</span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-3">
-                    <p className="text-sm text-gray-400 line-through">
-                      {tour.sale_price ? `$${tour.price}` : ""}
-                    </p>
-                    <p className="text-lg font-bold text-primary">
-                      From ${tour.sale_price || tour.price}{" "}
-                      <span className="text-sm">per person</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+                </Link>
+              </motion.div>
+            ))}
+          </Carousel>
         </div>
       )}
     </div>

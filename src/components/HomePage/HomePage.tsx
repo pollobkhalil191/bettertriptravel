@@ -18,7 +18,7 @@ const HomePage = () => {
 
       {/* Tour Card Section */}
       <div className="">
-
+        
       <TabHero locationId={locationId} setLocationId={setLocationId} />
       </div>
 
@@ -28,7 +28,7 @@ const HomePage = () => {
       
 
       {/* Paris Tours Section */}
-      <div className="lg:px-28">
+      <div className="lg:px-20">
         <ParisTours />
       </div>
 

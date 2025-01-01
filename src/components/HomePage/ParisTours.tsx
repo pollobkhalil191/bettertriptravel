@@ -5,8 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { fetchAllToursByLocation } from '../../Api/tourService';
 import { FaHeart } from 'react-icons/fa';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import { motion } from 'framer-motion'; // Import framer-motion
 
 interface ReviewScore {
   score_total: number;
@@ -32,15 +33,11 @@ interface TourResponse {
 
 const ParisTours = () => {
   const [tours, setTours] = useState<Tour[]>([]);
-  
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchParisTours = async () => {
       try {
-       
-
-        // Replace `2` with the actual location_id for Paris
         const locationIdForParis = 2; // Example location_id for Paris
         const data: TourResponse = await fetchAllToursByLocation(locationIdForParis);
 
@@ -54,45 +51,72 @@ const ParisTours = () => {
       } catch (err) {
         setError('Failed to fetch tour data');
         console.error('Error fetching tours:', err);
-      } 
+      }
     };
 
     fetchParisTours();
   }, []);
 
- 
   if (error) return <div>{error}</div>;
-
- 
 
   const isSliderActive = tours.length > 4;
 
+  const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 4,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 4,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 3,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
+
+  // Slide-in animation for the tour cards
+  const slideInAnimation = {
+    hidden: { opacity: 0, x: -100 }, // Start from left
+    show: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 50,
+        damping: 25,
+      },
+    },
+  };
+
   return (
     <div className="px-4 lg:px-0 py-8">
-      <h2 className="text-2xl font-bold mb-6">Explore more in New York</h2>
+      <h2 className="text-2xl font-bold mb-6">Explore more in Paris</h2>
       <div className="mb-8">
-       
-        {/* Swiper Slider if there are more than 4 tours */}
+        {/* React Multi Carousel if there are more than 4 tours */}
         {isSliderActive ? (
-          <Swiper
-            spaceBetween={30}
-            slidesPerView={1}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-              },
-              768: {
-                slidesPerView: 3,
-              },
-              1024: {
-                slidesPerView: 4,
-              },
-            }}
-            className="tour-swiper"
-            navigation={false} // Disable navigation (arrows)
+          <Carousel
+            responsive={responsive}
+            infinite={true}
+            autoPlay={true}
+            autoPlaySpeed={3000}
+            transitionDuration={500}
+            containerClass="carousel-container"
+            itemClass="px-3" // Add gap between cards
           >
-            {tours.map((tour) => (
-              <SwiperSlide key={tour.id}>
+            {tours.map((tour, index) => (
+              <motion.div
+                key={tour.id}
+                initial="hidden"
+                animate="show"
+                variants={slideInAnimation}
+                transition={{ delay: index * 0.1 }} // Stagger the animation
+              >
                 <Link href={`/tour/${tour.id}`}>
                   <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
                     {/* Favorite Icon */}
@@ -140,59 +164,67 @@ const ParisTours = () => {
                     </div>
                   </div>
                 </Link>
-              </SwiperSlide>
+              </motion.div>
             ))}
-          </Swiper>
+          </Carousel>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tours.map((tour) => (
-              <Link href={`/tour/${tour.id}`} key={tour.id}>
-                <div className="tour-card bg-white shadow-sm rounded-lg overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
-                  {/* Favorite Icon */}
-                  <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
-                    <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
-                  </div>
-
-                  {/* Tour Image */}
-                  <div className="relative w-full h-[200px] overflow-hidden">
-                    <Image
-                      src={tour.image}
-                      alt={tour.title}
-                      width={500}
-                      height={200}
-                      className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
-                    />
-                  </div>
-
-                  {/* Tour Content */}
-                  <div className="p-4 flex flex-col flex-grow">
-                    {/* Location */}
-                    <p className="text-sm font-medium text-gray-500">{tour.location?.name || 'Unknown Location'}</p>
-
-                    {/* Title (One or Two Lines) */}
-                    <h3 className="text-xl font-semibold line-clamp-2 mb-2">{tour.title}</h3>
-
-                    {/* Duration */}
-                    <p className="text-gray-600">{tour.duration}</p>
-
-                    {/* Reviews */}
-                    <div className="mt-2 flex items-center">
-                      <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
-                      <span className="ml-1 text-gray-500">({tour.review_score.total_review} reviews)</span>
+            {tours.map((tour, index) => (
+              <motion.div
+                key={tour.id}
+                initial="hidden"
+                animate="show"
+                variants={slideInAnimation}
+                transition={{ delay: index * 0.1 }} // Stagger the animation
+              >
+                <Link href={`/tour/${tour.id}`}>
+                  <div className="tour-card bg-white shadow-sm rounded-lg overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
+                    {/* Favorite Icon */}
+                    <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
+                      <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
                     </div>
 
-                    {/* Price */}
-                    <div className="mt-2 items-center">
-                      <p className="text-sm text-gray-400 line-through">
-                        {tour.sale_price ? `$${tour.price}` : ''}
-                      </p>
-                      <p className="text-lg font-bold text-textPrimary">
-                        From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
-                      </p>
+                    {/* Tour Image */}
+                    <div className="relative w-full h-[200px] overflow-hidden">
+                      <Image
+                        src={tour.image}
+                        alt={tour.title}
+                        width={500}
+                        height={200}
+                        className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
+                      />
+                    </div>
+
+                    {/* Tour Content */}
+                    <div className="p-4 flex flex-col flex-grow">
+                      {/* Location */}
+                      <p className="text-sm font-medium text-gray-500">{tour.location?.name || 'Unknown Location'}</p>
+
+                      {/* Title (One or Two Lines) */}
+                      <h3 className="text-xl font-semibold line-clamp-2 mb-2">{tour.title}</h3>
+
+                      {/* Duration */}
+                      <p className="text-gray-600">{tour.duration}</p>
+
+                      {/* Reviews */}
+                      <div className="mt-2 flex items-center">
+                        <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
+                        <span className="ml-1 text-gray-500">({tour.review_score.total_review} reviews)</span>
+                      </div>
+
+                      {/* Price */}
+                      <div className="mt-2 items-center">
+                        <p className="text-sm text-gray-400 line-through">
+                          {tour.sale_price ? `$${tour.price}` : ''}
+                        </p>
+                        <p className="text-lg font-bold text-textPrimary">
+                          From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         )}

@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { fetchHomePageData } from "../../Api/homePageService"; // Adjust this path if needed
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { motion } from "framer-motion"; // Import framer-motion for animations
 
 // Define interfaces for data
 interface Location {
@@ -27,18 +30,39 @@ interface DestinationType {
   tourCount: number;
 }
 
+// Carousel responsive settings
+const responsive = {
+  superLargeDesktop: {
+    breakpoint: { max: 4000, min: 3000 },
+    items: 4,
+    partialVisibilityGutter: 20, // Adds a gap for larger screens
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 4,
+    partialVisibilityGutter: 20,
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 3,
+    partialVisibilityGutter: 20,
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1,
+    partialVisibilityGutter: 20,
+  },
+};
+
 export default function Destination() {
   const [destinations, setDestinations] = useState<DestinationType[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDestinations = async () => {
       try {
         const data = await fetchHomePageData();
-        
-        console.log('Fetched data:', data); // Debugging log to check fetched data
-        
+
         if (data) {
           const locations =
             data.data.find(
@@ -46,16 +70,12 @@ export default function Destination() {
                 item.type === "list_locations"
             )?.model?.data || [];
 
-          console.log('Locations:', locations); // Debugging log to check locations data
-
           const destinationsWithTourCount = await Promise.all(
             locations.map(async (location: Location) => {
               const toursResponse = await fetch(
                 `https://btt.triumphdigital.co.th/api/tour/search?location_id=${location.id}`
               );
               const toursData: ToursData = await toursResponse.json();
-
-              console.log(`Tours data for location ${location.id}:`, toursData); // Debugging log for tour data
 
               return {
                 id: location.id,
@@ -66,8 +86,6 @@ export default function Destination() {
             })
           );
 
-          console.log('Destinations with tour count:', destinationsWithTourCount); // Debugging log for final destinations
-
           setDestinations(destinationsWithTourCount);
         } else {
           setError("Failed to fetch destinations data.");
@@ -75,36 +93,48 @@ export default function Destination() {
       } catch (err) {
         console.error("Error fetching destinations:", err);
         setError("An error occurred while fetching destinations data.");
-      } finally {
-        setLoading(false); // Ensure loading state is updated
       }
     };
 
     fetchDestinations();
   }, []);
 
-  if (loading) return <div>Loading destinations...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   return (
-    <section className="py-10 px-5 lg:px-28">
+    <section className="py-10 px-5 lg:px-20">
       <h2 className="text-2xl font-bold text-left mb-6">
         Awe-inspiring destinations around the world
       </h2>
-      <div className="relative">
-        <div className="flex gap-4 overflow-x-auto scroll-smooth">
-          {destinations.map((destination) => (
+      <Carousel
+        responsive={responsive}
+        infinite={true}
+        autoPlay={true}
+        autoPlaySpeed={3000}
+        transitionDuration={500}
+        containerClass="carousel-container"
+        itemClass="px-3" // Add gap between cards
+      >
+        {destinations.map((destination, index) => (
+          <motion.div
+            key={destination.id}
+            initial={{ x: -100, opacity: 0 }} // Start off-screen to the left
+            animate={{ x: 0, opacity: 1 }}   // Animate into position
+            transition={{
+              delay: index * 0.2,             // Add stagger for each item
+              duration: 0.6,                 // Duration of the animation
+              type: "spring",                // Spring effect for smoother entry
+              stiffness: 50,                 // Adjust spring stiffness
+            }}
+          >
             <Link
-              key={destination.id}
-              href={`/tour?location_id=${destination.id}`} // Correctly pass location_id
+              href={`/tour?location_id=${destination.id}`}
               title={`Explore tours for ${destination.title}`}
               aria-label={`Explore tours for ${destination.title}`}
             >
-              <div className="relative flex-shrink-0 w-[180px] h-[220px] overflow-hidden rounded-lg group cursor-pointer">
+              <div className="relative w-full h-[220px] overflow-hidden rounded-lg group cursor-pointer">
                 <Image
                   src={destination.image}
                   alt={`Image of ${destination.title}`}
-                  width={180}
+                  width={300}
                   height={200}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -118,9 +148,9 @@ export default function Destination() {
                 </div>
               </div>
             </Link>
-          ))}
-        </div>
-      </div>
+          </motion.div>
+        ))}
+      </Carousel>
     </section>
   );
 }

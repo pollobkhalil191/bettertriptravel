@@ -1,5 +1,6 @@
 // api/tourDetails.ts
-import axios from 'axios';
+import axios from "axios";
+import { Key } from "react";
 
 // Define the type for the tour details response
 export interface TourDetailsResponse {
@@ -22,23 +23,39 @@ export interface TourDetailsResponse {
     review_score: {
       score_text: string;
       score_total: number;
-      rate_score: Record<string, { title: string; total: number }>;
+      rate_score: Record<
+        string,
+        {
+          percent: number;
+          title: string;
+          total: number;
+        }
+      >;
     };
     review_lists?: {
-      data: { author: { name: string }; content: string; rate_number: number }[];
+      data: {
+        data: unknown;
+        id: Key | null | undefined;
+        created_at: string;
+        author: { name: string };
+        content: string;
+        rate_number: number;
+      }[];
     };
   };
 }
 
 // Fetch details of a single tour
-export const fetchTourDetails = async (tourId: string): Promise<TourDetailsResponse> => {
+export const fetchTourDetails = async (
+  tourId: string
+): Promise<TourDetailsResponse> => {
   try {
     const response = await axios.get<TourDetailsResponse>(
       `https://btt.triumphdigital.co.th/api/tour/detail/${tourId}`
     );
     return response.data;
   } catch (error) {
-    console.error('Error fetching tour details:', error);
+    console.error("Error fetching tour details:", error);
     throw error;
   }
 };

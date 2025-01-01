@@ -4,6 +4,7 @@ import Gallery from "../../../components/Gallery";
 import Image from "next/image";
 import CheckAvailability from "@/components/CheckAvailability";
 import { Metadata } from "next";
+import ReviewComponent from "@/components/review";
 
 // Define the Tour details type
 interface Tour {
@@ -14,12 +15,13 @@ interface Tour {
   sale_price?: number;
   discount_percent?: string;
   content: string;
-  
+  duration: string;
+  max_people: number;
   address: string;
   location: {
     name: string;
   };
-  
+
   gallery: string[];
   banner_image?: string;
   video?: string;
@@ -43,8 +45,7 @@ interface PageProps {
 // Fetch Tour Details
 async function getTourDetails(id: string): Promise<Tour | null> {
   try {
-    const response: TourApiResponse = await fetchTourDetails(id)
-;
+    const response: TourApiResponse = await fetchTourDetails(id);
     return response?.data || null;
   } catch (error) {
     console.error("Error fetching tour details:", error);
@@ -53,13 +54,13 @@ async function getTourDetails(id: string): Promise<Tour | null> {
 }
 
 // Generate Metadata for the Page
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   // Await params to ensure we can access the id properly
   const { id } = await params;
 
-  const tour = await getTourDetails(id)
-;
-
+  const tour = await getTourDetails(id);
   if (!tour) {
     return {
       title: "Tour Not Found",
@@ -83,9 +84,7 @@ const TourDetails = async ({ params }: PageProps) => {
     return null;
   }
 
-  const tour = await getTourDetails(id)
-;
-
+  const tour = await getTourDetails(id);
   if (!tour) {
     notFound();
     return null;
@@ -99,17 +98,18 @@ const TourDetails = async ({ params }: PageProps) => {
     video = null,
     review_score = { score_text: "No reviews", score_total: 0 },
     sale_price = "N/A",
-    location = { name: "Unknown" },
+
     address = "Not provided",
   } = tour;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className=" mx-auto lg:px-20 py-12">
       <h1 className="text-4xl font-extrabold text-gray-900 mb-6">{title}</h1>
 
       <div className="review-score mb-8">
         <p className="text-lg text-gray-800">
-          Rating: <span className="font-semibold">{review_score.score_text}</span> (
+          Rating:{" "}
+          <span className="font-semibold">{review_score.score_text}</span> (
           {review_score.score_total} stars)
         </p>
         <div className="flex items-center mt-2">
@@ -165,17 +165,126 @@ const TourDetails = async ({ params }: PageProps) => {
               __html: content || "No description available.",
             }}
           />
-          <p className="text-xl font-semibold text-gray-800">
-          type: {tour.category.name}
-        </p>
+
+          {/* About this activity */}
+
+          <div className=" pt-6 max-w-md">
+            <h2 className="text-xl font-bold text-navy-900 mb-4">
+              About this activity
+            </h2>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-6 h-6 text-primary flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <div>
+                  <p className="font-semibold text-lg text-gray-900">
+                    Location
+                  </p>
+                  <p className="text-sm font-sm text-800">
+                    {tour.location.name}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-6 h-6 text-primary flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                <div>
+                  <p className="font-semibold text-lg  text-gray-900">
+                    Groupe size
+                  </p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {tour.max_people}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-6 h-6 text-primary flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-semibold text-lg text-gray-900">
+                    Duration{" "}
+                  </p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {tour.duration}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-6 h-6 text-primary flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 6h.008v.008H6V6z"
+                  />
+                </svg>
+                <div>
+                  <p className="font-semibold text-lg text-gray-900">Type</p>
+                  <p className="text-sm font-semibold text-gray-800">
+                    {tour.category.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Review section  */}
 
         <div className="flex flex-col lg:w-1/3 space-y-6 lg:space-y-8">
           <div className="price-section flex items-center justify-between border-2 border-t-4 border-t-blue-600 bg-white p-6 shadow-sm">
             {sale_price !== "N/A" && (
               <p className="text-3xl font-semibold text-primary">
-                <span className="text-sm text-primary">From</span> <br />
-                ${sale_price}
+                <span className="text-sm text-primary">From</span> <br />$
+                {sale_price}
                 <br />
                 <span className="text-sm text-primary">per person</span>
               </p>
@@ -191,12 +300,8 @@ const TourDetails = async ({ params }: PageProps) => {
         </div>
       </div>
 
+      <ReviewComponent tourId={id} />
       <div className="location-section mb-8">
-        <p className="text-xl font-semibold text-gray-800">
-          Location: {location.name}
-        </p>
-        
-        
         <p className="text-sm text-gray-500">{address}</p>
         <CheckAvailability tourId={id} />
       </div>

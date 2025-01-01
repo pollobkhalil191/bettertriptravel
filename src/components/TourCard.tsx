@@ -80,7 +80,7 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   
 
   return (
-    <div className="px-5 py-8 lg:px-28">
+    <div className="px-5 py-8 lg:px-20">
       {/* Location Tabs */}
       <div className="flex gap-4 mb-6 border-b-2 pb-4">
         {locations.map((location) => (

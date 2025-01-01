@@ -4,7 +4,7 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 const Footer: FC = () => {
   return (
     <footer className="bg-gray-800 text-white py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto lg:px-20">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Language Section */}
           <div>
