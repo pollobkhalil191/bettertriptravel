@@ -1,20 +1,17 @@
-// src/services/api.ts
-import axios from 'axios';
+// lib/auth.ts
 
-const API = axios.create({
-  baseURL: 'https://btt.triumphdigital.co.th/api',
-});
+import { apiRequest } from "./api";
 
-// Add token to headers
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+export const login = async (email: string, password: string) => {
+  const response = await apiRequest(
+    "https://btt.triumphdigital.co.th/api/auth/login",
+    "POST",
+    { email, password }
+  );
+
+  if (response.status === 1) {
+    return response.access_token;
   }
-  return config;
-});
 
-export const getCurrentUser = async () => {
-  const response = await API.get('/auth/me');
-  return response.data;
+  throw new Error("Login failed");
 };

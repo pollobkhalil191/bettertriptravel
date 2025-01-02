@@ -1,104 +1,48 @@
+// context/AuthContext.tsx
 
-"use client";
+"use client"; // Mark this file as a client component
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
-
-// Define a type for the user object based on your API response
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  // Add other fields as per your API response
-}
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { User } from "../app/types/user"; // Import the User type
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  user: User | null; // Use the specific User type
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Set the User or null
+  token: string | null;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+  login: (userData: { user: User; token: string }) => void; // Login function now expects userData with the correct type
   logout: () => void;
-  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
-  isAuthenticated: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null); // Use User type for state
+  const [token, setToken] = useState<string | null>(null);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post('https://btt.triumphdigital.co.th/api/auth/login', {
-        email,
-        password,
-        device_name: 'Desktop',
-      });
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user); // Make sure the user response is correctly typed
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error logging in:', error);
-      throw error;
-    }
-  };
-
-  const register = async (email: string, password: string) => {
-    try {
-      const response = await axios.post('https://btt.triumphdigital.co.th/api/auth/register', {
-        email,
-        password,
-      });
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user); // Ensure this is typed correctly
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error registering:', error);
-      throw error;
-    }
+  const login = (userData: { user: User; token: string }) => {
+    setUser(userData.user); // Set the user with the expected type
+    setToken(userData.token); // Set the token
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsAuthenticated(false);
+    setUser(null); // Clear user data
+    setToken(null); // Clear token
   };
-
-  const changePassword = async (oldPassword: string, newPassword: string) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'https://btt.triumphdigital.co.th/api/auth/change-password',
-        { old_password: oldPassword, new_password: newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log('Password changed successfully');
-    } catch (error) {
-      console.error('Error changing password:', error);
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios
-        .get('https://btt.triumphdigital.co.th/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setUser(response.data); // Ensure this response is typed correctly
-          setIsAuthenticated(true);
-        })
-        .catch(() => {
-          setIsAuthenticated(false);
-        });
-    }
-  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, changePassword, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ user, setUser, token, setToken, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };

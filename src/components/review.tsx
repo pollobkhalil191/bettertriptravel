@@ -42,23 +42,26 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ tourId }) => {
   const initialReviews = reviewData.slice(0, 2);
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+    <div className="bg-white rounded-lg p-6 ">
+      <h2 className="text-2xl font-semibold mb-4">
+        Highlighted reviews from other travelers
+      </h2>
 
       {/* Initial Reviews */}
-      <div className="space-y-4">
+      <div className="lg:flex lg:gap-4 flex-wrap">
         {initialReviews.map((review) => {
           const authorName = review.author?.name || "Anonymous";
           const authorInitial = authorName[0]?.toUpperCase() || "A";
+          const country = review.author?.country || "";
 
           return (
             <div
               key={review.id}
-              className="p-4 bg-gray-100 rounded-lg shadow-sm flex items-center space-x-4"
-              style={{ width: "385px", height: "180px" }}
+              className="p-4 bg-white shadow-lg rounded-lg flex items-center space-x-4 mb-4 lg:mb-0"
+              style={{ width: "100%", maxWidth: "385px", height: "180px" }}
             >
               {/* Author's Initial in Circle */}
-              <div className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full font-semibold text-lg">
+              <div className="w-12 h-12 bg-blue-500 shadow-sm text-white flex items-center justify-center rounded-full font-semibold text-lg">
                 {authorInitial}
               </div>
 
@@ -71,8 +74,10 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ tourId }) => {
                     {"☆".repeat(5 - review.rate_number)}
                   </span>
                 </div>
-                {/* Author Name */}
-                <h4 className="font-semibold text-lg">{authorName}</h4>
+                {/* Author Name and Country */}
+                <h4 className="font-semibold text-lg">
+                  {authorName} — {country}
+                </h4>
 
                 {/* Review Date */}
                 <p className="text-sm text-gray-600">
@@ -95,7 +100,7 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ tourId }) => {
           onClick={() => setShowPopup(true)}
           className="mt-4 text-blue-500 hover:underline"
         >
-          Review More
+          See more reviews
         </button>
       )}
 
@@ -122,7 +127,6 @@ const ReviewComponent: React.FC<ReviewComponentProps> = ({ tourId }) => {
                   <div
                     key={review.id}
                     className="p-4 bg-gray-100 rounded-lg shadow-sm flex items-center space-x-4"
-                    style={{ width: "385px", height: "180px" }}
                   >
                     {/* Author's Initial in Circle */}
                     <div className="w-12 h-12 bg-blue-500 text-white flex items-center justify-center rounded-full font-semibold text-lg">

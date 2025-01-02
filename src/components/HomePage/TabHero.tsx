@@ -53,7 +53,9 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://btt.triumphdigital.co.th/api/locations");
+        const response = await fetch(
+          "https://btt.triumphdigital.co.th/api/locations"
+        );
         const locationData = await response.json();
         const fetchedLocations = locationData.data || [];
         setLocations(fetchedLocations);
@@ -63,9 +65,15 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
         }
 
         const locationIdToUse = locationId ?? fetchedLocations[0]?.id ?? 0;
-        const tourResponse: TourResponse = await fetchAllToursByLocation(locationIdToUse);
+        const tourResponse: TourResponse = await fetchAllToursByLocation(
+          locationIdToUse
+        );
 
-        if (tourResponse?.data && Array.isArray(tourResponse.data) && tourResponse.data.length > 0) {
+        if (
+          tourResponse?.data &&
+          Array.isArray(tourResponse.data) &&
+          tourResponse.data.length > 0
+        ) {
           setTours(tourResponse.data);
           setError(null);
         } else {
@@ -81,7 +89,9 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
     fetchData();
   }, [locationId]);
 
-  const currentLocationImage = locations.find((loc) => loc.id === locationId)?.image;
+  const currentLocationImage = locations.find(
+    (loc) => loc.id === locationId
+  )?.image;
 
   // Carousel settings for react-multi-carousel
   const responsive = {
@@ -107,23 +117,16 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
     <div className="bg-gray-50 min-h-screen flex flex-col items-center">
       {/* Hero Section */}
       <div className="relative mb-12 w-full h-[80vh]">
-  {currentLocationImage ? (
-    <Image
-      src={currentLocationImage}
-      alt="Hero Image"
-      width={1600}
-      height={600}
-      className="w-full h-full object-cover"
-    />
-  ) : null}
-  <div className="flex items-center justify-center w-full h-full bg-gradient-to-b from-black via-transparent to-black opacity-70">
-    <div className="text-center text-white">
-      <h1 className="text-5xl text-black font-gt-easti font-bold">Discover Your Next Adventure</h1>
-      <p className="text-lg font-gt-easti mt-4">Explore amazing destinations worldwide</p>
-    </div>
-  </div>
-</div>
-
+        {currentLocationImage ? (
+          <Image
+            src={currentLocationImage}
+            alt="Hero Image"
+            width={1600}
+            height={600}
+            className="w-full h-full object-cover"
+          />
+        ) : null}
+      </div>
 
       {/* Location Selector */}
       <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-[72px] mb-8 w-full">
@@ -142,7 +145,9 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
               <button
                 onClick={() => setLocationId(location.id)}
                 className={`w-full py-5 px-16 rounded-lg text-center flex justify-center font-bold text-2xl ${
-                  locationId === location.id ? "bg-white text-primary" : "text-white"
+                  locationId === location.id
+                    ? "bg-white text-primary"
+                    : "text-white"
                 }`}
               >
                 {location.title}
@@ -185,7 +190,10 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
                 <Link href={`/tour/${tour.id}`}>
                   <div className="bg-white rounded-lg overflow-hidden border relative w-full">
                     <div className="absolute top-2 right-2 z-10 p-2 rounded-full shadow cursor-pointer">
-                      <FaHeart className="text-white hover:text-red-500 transition" size={20} />
+                      <FaHeart
+                        className="text-white hover:text-red-500 transition"
+                        size={20}
+                      />
                     </div>
                     <Image
                       src={tour.image}
@@ -195,14 +203,18 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
                       className="w-full h-full object-cover"
                     />
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 truncate">{tour.title}</h3>
+                      <h3 className="text-lg font-semibold text-gray-800 truncate">
+                        {tour.title}
+                      </h3>
                       <p className="text-sm text-gray-500 mt-1">
                         {tour.location?.name || "Unknown Location"}
                       </p>
                       <p className="text-gray-600 mt-2">{tour.duration}</p>
                       <div className="flex items-center mt-3">
                         <span className="text-yellow-500">
-                          {"★".repeat(Math.round(tour.review_score.score_total))}
+                          {"★".repeat(
+                            Math.round(tour.review_score.score_total)
+                          )}
                         </span>
                         <span className="ml-2 text-sm text-gray-500">
                           ({tour.review_score.total_review} reviews)

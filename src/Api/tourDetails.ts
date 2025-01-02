@@ -5,12 +5,17 @@ import { Key } from "react";
 // Define the type for the tour details response
 export interface TourDetailsResponse {
   data: {
-    id: string;
+    id: number;
     title: string;
     price: number;
     sale_price?: number;
     discount_percent?: string;
     content: string;
+
+    category: { name: string };
+
+    max_people: number;
+    min_people: number;
     address: string;
     location: { name: string };
     params: { id: string };
@@ -32,12 +37,16 @@ export interface TourDetailsResponse {
         }
       >;
     };
+
     review_lists?: {
       data: {
         data: unknown;
         id: Key | null | undefined;
         created_at: string;
-        author: { name: string };
+        author: {
+          country: string;
+          name: string;
+        };
         content: string;
         rate_number: number;
       }[];
