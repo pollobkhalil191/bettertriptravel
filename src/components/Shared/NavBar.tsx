@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SearchField from "../SearchFilter";
 import MobileMenu from "./mobileMenu";
+import { useAuth } from "../../context/AuthContext";
 
 export default function NavBar() {
   const [isSticky, setIsSticky] = useState(false); // Sticky header state
@@ -25,6 +26,7 @@ export default function NavBar() {
     { title: "Contact", path: "/contactUs" },
     { title: "Blog", path: "/login" },
   ];
+  const { isAuthenticated } = useAuth();
 
   // Dropdown Items with Modifications
   // const dropdownItems = [
@@ -138,30 +140,65 @@ export default function NavBar() {
             </button>
 
             {/* Login */}
-            <Link href="/login">
-              <button className="text-lg items-center">
-                <svg
-                  className="w-6 h-6 text-secondary dark:text-white"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 12v8m0-8a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm0 0a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z"
-                  />
-                </svg>
-                <p className="text-sm font-gt-easti text-secondary items-center">
-                  Login
-                </p>
-              </button>
-            </Link>
+            <div className="container mx-auto flex justify-between items-center">
+              <div>
+                {isAuthenticated ? (
+                  <Link
+                    href="/profile"
+                    className="flex flex-col  items-center  "
+                  >
+                    {/* Profile Icon for Dashboard */}
+                    <svg
+                      className="w-6 h-6 text-secondary dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+
+                    <span className="text-sm text-secondary font-semibold">
+                      Profile
+                    </span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex flex-col font-semibold  items-center text-secondary"
+                  >
+                    {/* Login Icon */}
+                    <svg
+                      className="w-6 h-6  dark:text-white"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+
+                    <span className="text-sm text-secondary font-semibold">
+                      Login
+                    </span>
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Mobile Menu */}

@@ -14,11 +14,7 @@ export const metadata: Metadata = {
   description: "Explore amazing travel experiences with Better-Trip-Travel.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" data-theme="betterTrip">
       <body className={inter.className}>
@@ -27,11 +23,12 @@ export default function RootLayout({
           {/* NavBar visible on all pages */}
           <NavBar />
           {/* Render dynamic children (page content) */}
-          {children}
+          <main>{children}</main>
           {/* Footer visible on all pages */}
           <Footer />
         </AuthProvider>
       </body>
     </html>
   );
-}
+};
+export default Layout;
