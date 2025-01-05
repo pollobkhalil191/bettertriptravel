@@ -24,7 +24,7 @@ export default function NavBar() {
     { title: "About Us", path: "/about" },
     { title: "Tours", path: "/tour" },
     { title: "Contact", path: "/contactUs" },
-    { title: "Blog", path: "/login" },
+    { title: "Blog", path: "/blog" },
   ];
   const { isAuthenticated } = useAuth();
 

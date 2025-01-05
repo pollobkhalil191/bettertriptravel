@@ -1,10 +1,9 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchAllToursByLocation } from "../Api/tourService";
 import { FaHeart } from "react-icons/fa";
+import Button from "./button"; // Import the Button component
 
 interface ReviewScore {
   score_total: number;
@@ -15,18 +14,14 @@ interface Tour {
   id: number;
   title: string;
   image: string;
- 
   duration: string;
   price: number;
   sale_price?: number;
   review_score: ReviewScore;
- 
   location?: {
     name: string;
   };
 }
-
-
 
 interface TourResponse {
   data: Tour[];
@@ -49,16 +44,25 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [cart, setCart] = useState<Tour[]>([]); // To manage the cart state
+
+  // Function to handle adding tours to the cart
+  const handleAddToCart = (tour: Tour) => {
+    setCart((prevCart) => [...prevCart, tour]);
+    alert(`${tour.title} has been added to your cart!`);
+  };
 
   useEffect(() => {
     const fetchTours = async () => {
       try {
         setLoading(true);
         const locationIdToUse = locationId ?? 0; // Use 0 to fetch all tours
-        const data: TourResponse = await fetchAllToursByLocation(locationIdToUse);
-  
+        const data: TourResponse = await fetchAllToursByLocation(
+          locationIdToUse
+        );
+
         console.log("API Response:", data); // Debugging API response
-  
+
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
           setTours(data.data);
           setError(null);
@@ -73,11 +77,9 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
         setLoading(false);
       }
     };
-  
+
     fetchTours();
   }, [locationId]);
-  
-  
 
   return (
     <div className="px-5 py-8 lg:px-20">
@@ -101,7 +103,9 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
       {/* Loading/Error/No Tours */}
       {loading && <div>Loading...</div>}
       {error && <div>{error}</div>}
-      {!loading && tours.length === 0 && !error && <div>No tours available</div>}
+      {!loading && tours.length === 0 && !error && (
+        <div>No tours available</div>
+      )}
 
       {/* Tour Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -146,6 +150,12 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
                     <span className="text-sm">per person</span>
                   </p>
                 </div>
+                {/* Add to Cart Button */}
+                <Button
+                  onClick={() => handleAddToCart(tour)}
+                  label="Add to Cart"
+                  className="mt-4"
+                />
               </div>
             </div>
           </Link>

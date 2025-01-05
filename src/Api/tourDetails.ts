@@ -1,10 +1,13 @@
 // api/tourDetails.ts
+
 import axios from "axios";
 import { Key } from "react";
 
 // Define the type for the tour details response
 export interface TourDetailsResponse {
+  itinerary: never[];
   data: {
+    itinerary: never[];
     id: number;
     title: string;
     price: number;
@@ -56,7 +59,7 @@ export interface TourDetailsResponse {
 
 // Fetch details of a single tour
 export const fetchTourDetails = async (
-  tourId: string
+  tourId: string | number
 ): Promise<TourDetailsResponse> => {
   try {
     const response = await axios.get<TourDetailsResponse>(

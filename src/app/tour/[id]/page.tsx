@@ -5,7 +5,8 @@ import Image from "next/image";
 import CheckAvailability from "@/components/CheckAvailability";
 import { Metadata } from "next";
 import ReviewComponent from "@/components/review";
-import ItineraryComponent from "@/components/map";
+
+import ItineraryTourDetails from "@/components/tourDetails/itinerary";
 
 // Define the Tour details type
 interface Tour {
@@ -303,7 +304,7 @@ const TourDetails = async ({ params }: PageProps) => {
 
       <ReviewComponent tourId={id} />
 
-      <ItineraryComponent />
+      <ItineraryTourDetails tourId={id} />
 
       <div className="location-section mb-8">
         <p className="text-sm text-gray-500">{address}</p>

@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { fetchAllToursByLocation } from '../../Api/tourService';
-import { FaHeart } from 'react-icons/fa';
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
-import { motion } from 'framer-motion'; // Import framer-motion
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { fetchAllToursByLocation } from "../../Api/tourService";
+import { FaHeart } from "react-icons/fa";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { motion } from "framer-motion"; // Import framer-motion
+import Button from "../button";
 
 interface ReviewScore {
   score_total: number;
@@ -39,18 +40,20 @@ const ParisTours = () => {
     const fetchParisTours = async () => {
       try {
         const locationIdForParis = 2; // Example location_id for Paris
-        const data: TourResponse = await fetchAllToursByLocation(locationIdForParis);
+        const data: TourResponse = await fetchAllToursByLocation(
+          locationIdForParis
+        );
 
         if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
           setTours(data.data); // Filtered tours for Paris
           setError(null); // Clear any error
         } else {
           setTours([]);
-          setError('No tours available for Paris');
+          setError("No tours available for Paris");
         }
       } catch (err) {
-        setError('Failed to fetch tour data');
-        console.error('Error fetching tours:', err);
+        setError("Failed to fetch tour data");
+        console.error("Error fetching tours:", err);
       }
     };
 
@@ -59,7 +62,7 @@ const ParisTours = () => {
 
   if (error) return <div>{error}</div>;
 
-  const isSliderActive = tours.length > 4;
+  const isSliderActive = tours.length > 4; // Only show slider if there are more than 4 tours
 
   const responsive = {
     superLargeDesktop: {
@@ -87,12 +90,17 @@ const ParisTours = () => {
       opacity: 1,
       x: 0,
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 50,
         damping: 25,
       },
     },
   };
+
+  function handleAddToCart(tour: Tour): void {
+    console.log(`Tour added to cart: ${tour.title}`);
+    // Implement the logic to add the tour to the cart
+  }
 
   return (
     <div className="px-4 lg:px-0 py-8">
@@ -121,7 +129,10 @@ const ParisTours = () => {
                   <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
                     {/* Favorite Icon */}
                     <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
-                      <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
+                      <FaHeart
+                        className="text-white hover:text-red-500 transition duration-200"
+                        size={20}
+                      />
                     </div>
 
                     {/* Tour Image */}
@@ -138,27 +149,38 @@ const ParisTours = () => {
                     {/* Tour Content */}
                     <div className="p-4 flex flex-col flex-grow">
                       {/* Location */}
-                      <p className="text-sm font-medium text-gray-500">{tour.location?.name || 'Unknown Location'}</p>
+                      <p className="text-sm font-medium text-gray-500">
+                        {tour.location?.name || "Unknown Location"}
+                      </p>
 
                       {/* Title (One or Two Lines) */}
-                      <h3 className="text-xl font-semibold line-clamp-2 mb-2">{tour.title}</h3>
+                      <h3 className="text-xl font-semibold line-clamp-2 mb-2">
+                        {tour.title}
+                      </h3>
 
                       {/* Duration */}
                       <p className="text-gray-600">{tour.duration}</p>
 
                       {/* Reviews */}
                       <div className="mt-2 flex items-center">
-                        <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
-                        <span className="ml-1 text-gray-500">({tour.review_score.total_review} reviews)</span>
+                        <span className="text-yellow-500">
+                          {"★".repeat(
+                            Math.round(tour.review_score.score_total)
+                          )}
+                        </span>
+                        <span className="ml-1 text-gray-500">
+                          ({tour.review_score.total_review} reviews)
+                        </span>
                       </div>
 
                       {/* Price */}
                       <div className="mt-2 items-center">
                         <p className="text-sm text-gray-400 line-through">
-                          {tour.sale_price ? `$${tour.price}` : ''}
+                          {tour.sale_price ? `$${tour.price}` : ""}
                         </p>
                         <p className="text-lg font-bold text-textPrimary">
-                          From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
+                          From {`$${tour.sale_price || tour.price}`}{" "}
+                          <span className="text-sm">per person</span>
                         </p>
                       </div>
                     </div>
@@ -181,7 +203,10 @@ const ParisTours = () => {
                   <div className="tour-card bg-white shadow-sm rounded-lg overflow-hidden transform transition-transform duration-300 ease-in-out border relative flex flex-col h-full">
                     {/* Favorite Icon */}
                     <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
-                      <FaHeart className="text-white hover:text-red-500 transition duration-200" size={20} />
+                      <FaHeart
+                        className="text-white hover:text-red-500 transition duration-200"
+                        size={20}
+                      />
                     </div>
 
                     {/* Tour Image */}
@@ -198,29 +223,46 @@ const ParisTours = () => {
                     {/* Tour Content */}
                     <div className="p-4 flex flex-col flex-grow">
                       {/* Location */}
-                      <p className="text-sm font-medium text-gray-500">{tour.location?.name || 'Unknown Location'}</p>
+                      <p className="text-sm font-medium text-gray-500">
+                        {tour.location?.name || "Unknown Location"}
+                      </p>
 
                       {/* Title (One or Two Lines) */}
-                      <h3 className="text-xl font-semibold line-clamp-2 mb-2">{tour.title}</h3>
+                      <h3 className="text-xl font-semibold line-clamp-2 mb-2">
+                        {tour.title}
+                      </h3>
+                      <Button
+                        onClick={() => handleAddToCart(tour)}
+                        label="Add to Cart"
+                        className="mt-4"
+                      />
 
                       {/* Duration */}
                       <p className="text-gray-600">{tour.duration}</p>
 
                       {/* Reviews */}
                       <div className="mt-2 flex items-center">
-                        <span className="text-yellow-500">{'★'.repeat(Math.round(tour.review_score.score_total))}</span>
-                        <span className="ml-1 text-gray-500">({tour.review_score.total_review} reviews)</span>
+                        <span className="text-yellow-500">
+                          {"★".repeat(
+                            Math.round(tour.review_score.score_total)
+                          )}
+                        </span>
+                        <span className="ml-1 text-gray-500">
+                          ({tour.review_score.total_review} reviews)
+                        </span>
                       </div>
 
                       {/* Price */}
                       <div className="mt-2 items-center">
                         <p className="text-sm text-gray-400 line-through">
-                          {tour.sale_price ? `$${tour.price}` : ''}
+                          {tour.sale_price ? `$${tour.price}` : ""}
                         </p>
                         <p className="text-lg font-bold text-textPrimary">
-                          From {`$${tour.sale_price || tour.price}`} <span className="text-sm">per person</span>
+                          From {`$${tour.sale_price || tour.price}`}{" "}
+                          <span className="text-sm">per person</span>
                         </p>
                       </div>
+                      {/* Add to Cart Button */}
                     </div>
                   </div>
                 </Link>
