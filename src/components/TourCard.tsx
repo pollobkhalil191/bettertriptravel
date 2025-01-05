@@ -44,11 +44,10 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<Tour[]>([]); // To manage the cart state
+  const [cart] = useState<Tour[]>([]); // To manage the cart state
 
   // Function to handle adding tours to the cart
   const handleAddToCart = (tour: Tour) => {
-    setCart((prevCart) => [...prevCart, tour]);
     alert(`${tour.title} has been added to your cart!`);
   };
 
@@ -110,55 +109,68 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
       {/* Tour Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {tours.map((tour) => (
-          <Link href={`/tour/${tour.id}`} key={tour.id}>
-            <div className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative">
-              <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
-                <FaHeart
-                  className="text-white hover:text-red-500 transition duration-200"
-                  size={20}
-                />
-              </div>
-              <div className="relative w-full h-[200px] overflow-hidden">
-                <Image
-                  src={tour.image}
-                  alt={tour.title}
-                  width={500}
-                  height={200}
-                  className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
-                />
-              </div>
-              <div className="p-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {tour.location?.name || "Unknown Location"}
-                </p>
-                <h3 className="text-xl font-semibold">{tour.title}</h3>
-                <p className="text-gray-600 mt-2">{tour.duration}</p>
-                <div className="mt-2 flex items-center">
-                  <span className="text-yellow-500">
-                    {"★".repeat(Math.round(tour.review_score.score_total))}
-                  </span>
-                  <span className="ml-1 text-gray-500">
-                    ({tour.review_score.total_review} reviews)
-                  </span>
-                </div>
-                <div className="mt-2 items-center">
-                  <p className="text-sm text-gray-400 line-through">
-                    {tour.sale_price ? `$${tour.price}` : ""}
-                  </p>
-                  <p className="text-lg font-bold text-textPrimary">
-                    From {`$${tour.sale_price || tour.price}`}{" "}
-                    <span className="text-sm">per person</span>
-                  </p>
-                </div>
-                {/* Add to Cart Button */}
-                <Button
-                  onClick={() => handleAddToCart(tour)}
-                  label="Add to Cart"
-                  className="mt-4"
-                />
-              </div>
+          <div
+            key={tour.id}
+            className="tour-card bg-white shadow-sm rounded-sm overflow-hidden transform transition-transform duration-300 ease-in-out border relative"
+          >
+            <div className="absolute top-2 right-2 z-10 rounded-full p-2 shadow-md cursor-pointer">
+              <FaHeart
+                className="text-white hover:text-red-500 transition duration-200"
+                size={20}
+              />
             </div>
-          </Link>
+
+            {/* Link Wrapper */}
+            <Link href={`/tour/${tour.id}`}>
+              <div>
+                {/* Image Section */}
+                <div className="relative w-full h-[200px] overflow-hidden">
+                  <Image
+                    src={tour.image}
+                    alt={tour.title}
+                    width={500}
+                    height={200}
+                    className="w-full h-full object-cover transform transition-transform duration-300 ease-in-out hover:scale-110"
+                  />
+                </div>
+
+                {/* Tour Details */}
+                <div className="p-4">
+                  <p className="text-sm font-medium text-gray-500">
+                    {tour.location?.name || "Unknown Location"}
+                  </p>
+                  <h3 className="text-xl font-semibold">{tour.title}</h3>
+                  <p className="text-gray-600 mt-2">{tour.duration}</p>
+                  <div className="mt-2 flex items-center">
+                    <span className="text-yellow-500">
+                      {"★".repeat(Math.round(tour.review_score.score_total))}
+                    </span>
+                    <span className="ml-1 text-gray-500">
+                      ({tour.review_score.total_review} reviews)
+                    </span>
+                  </div>
+                  <div className="mt-2 items-center">
+                    <p className="text-sm text-gray-400 line-through">
+                      {tour.sale_price ? `$${tour.price}` : ""}
+                    </p>
+                    <p className="text-lg font-bold text-textPrimary">
+                      From {`$${tour.sale_price || tour.price}`}{" "}
+                      <span className="text-sm">per person</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Add to Cart Button */}
+            <div className="p-4">
+              <Button
+                onClick={() => handleAddToCart(tour)}
+                label="Add to Cart"
+                className="w-full mt-4"
+              />
+            </div>
+          </div>
         ))}
       </div>
     </div>
