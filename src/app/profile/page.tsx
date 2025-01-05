@@ -136,8 +136,12 @@ const Dashboard = () => {
       } else {
         alert(`Failed to update profile. Status: ${response.data.status}`);
       }
-    } catch (err: any) {
-      console.error("Error updating profile:", err.response || err); // Log the full error for debugging
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        console.error("Error updating profile:", err.response || err); // Log the full error for debugging
+      } else {
+        console.error("Error updating profile:", err); // Log the full error for debugging
+      }
       alert("Error updating profile. Please try again.");
     }
   };
