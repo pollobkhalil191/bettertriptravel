@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
-  interface User {
+  interface user {
     business_name: string;
     email: string;
     phone: string;
@@ -17,11 +17,11 @@ const Dashboard = () => {
     zip_code: string;
   }
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<user | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false); // State for toggling edit mode
-  const [updatedUserInfo, setUpdatedUserInfo] = useState<User | null>(null); // For storing updated values
+  const [updatedUserInfo, setUpdatedUserInfo] = useState<user | null>(null); // For storing updated values
   const router = useRouter(); // Router for navigation
 
   useEffect(() => {
@@ -113,7 +113,8 @@ const Dashboard = () => {
     }
 
     try {
-      console.log("Updated User Info:", updatedUserInfo); // Check user info structure before sending
+      console.log("Sending request with token:", token); // Log token before sending request
+      console.log("Updated User Info:", updatedUserInfo); // Log the payload
 
       const response = await axios.post(
         "https://btt.triumphdigital.co.th/api/auth/me",
@@ -121,22 +122,22 @@ const Dashboard = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Ensure the correct content type
+            "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("API response:", response); // Log the response to debug
+      console.log("API response:", response); // Log the response for debugging
 
       if (response.data.status === 1) {
-        setUser(updatedUserInfo); // Update the displayed user info
+        setUser(updatedUserInfo); // Update displayed user info
         setIsEditing(false); // Switch back to view mode
         alert("Profile updated successfully.");
       } else {
         alert(`Failed to update profile. Status: ${response.data.status}`);
       }
-    } catch (err) {
-      console.error("Error updating profile:", err); // Log the error for debugging
+    } catch (err: any) {
+      console.error("Error updating profile:", err.response || err); // Log the full error for debugging
       alert("Error updating profile. Please try again.");
     }
   };
