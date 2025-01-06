@@ -44,7 +44,6 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [cart] = useState<Tour[]>([]); // To manage the cart state
 
   // Function to handle adding tours to the cart
   const handleAddToCart = (tour: Tour) => {

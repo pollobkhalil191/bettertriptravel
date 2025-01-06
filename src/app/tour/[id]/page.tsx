@@ -2,11 +2,14 @@ import { fetchTourDetails } from "../../../Api/tourDetails";
 import { notFound } from "next/navigation";
 import Gallery from "../../../components/Gallery";
 import Image from "next/image";
-import CheckAvailability from "@/components/CheckAvailability";
+
 import { Metadata } from "next";
 import ReviewComponent from "@/components/review";
 
 import ItineraryTourDetails from "@/components/tourDetails/itinerary";
+import Link from "next/link";
+import CheckAvailability from "@/components/CheckAvailability";
+import FAQsComponent from "@/components/faq";
 
 // Define the Tour details type
 interface Tour {
@@ -100,8 +103,6 @@ const TourDetails = async ({ params }: PageProps) => {
     video = null,
     review_score = { score_text: "No reviews", score_total: 0 },
     sale_price = "N/A",
-
-    address = "Not provided",
   } = tour;
 
   return (
@@ -292,23 +293,29 @@ const TourDetails = async ({ params }: PageProps) => {
               </p>
             )}
 
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition duration-300"
-            >
-              Check Availability
-            </button>
+            <Link href="#2">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition duration-300"
+              >
+                Check Availability
+              </button>
+            </Link>
           </div>
         </div>
       </div>
 
       <ReviewComponent tourId={id} />
+      <div>
+        <ItineraryTourDetails tourId={id} />
+      </div>
 
-      <ItineraryTourDetails tourId={id} />
-
-      <div className="location-section mb-8">
-        <p className="text-sm text-gray-500">{address}</p>
+      <div id="2" className="location-section mb-8">
         <CheckAvailability tourId={id} />
+      </div>
+
+      <div>
+        <FAQsComponent tourId={id} />
       </div>
     </div>
   );

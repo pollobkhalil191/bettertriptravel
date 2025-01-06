@@ -1,4 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
+
+const API_BASE_URL = "https://btt.triumphdigital.co.th/api";
 
 // Define the types for the tour data
 interface Tour {
@@ -62,12 +64,40 @@ export const fetchAllToursByLocation = async (
 };
 
 // Fetch details of a single tour
-export const fetchTourDetails = async (tourId: number): Promise<TourDetailResponse> => {
+export const fetchTourDetails = async (
+  tourId: number
+): Promise<TourDetailResponse> => {
   try {
-    const response = await axios.get<TourDetailResponse>(`https://btt.triumphdigital.co.th/api/tour/detail/${tourId}`);
+    const response = await axios.get<TourDetailResponse>(
+      `https://btt.triumphdigital.co.th/api/tour/detail/${tourId}`
+    );
     return response.data; // Return the full data object
   } catch (error) {
-    console.error('Error fetching tour details:', error);
+    console.error("Error fetching tour details:", error);
+    throw error;
+  }
+};
+
+export const checkTourAvailability = async (
+  id: number,
+  start: string,
+  end: string,
+  forSingle: number
+) => {
+  try {
+    const token = "YOUR_TOKEN_HERE"; // Replace with your token if needed
+    const response = await axios.get(
+      `${API_BASE_URL}/tour/availability/${id}`,
+      {
+        params: { start, end, for_single: forSingle },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error checking tour availability:", error);
     throw error;
   }
 };

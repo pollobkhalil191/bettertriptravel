@@ -1,157 +1,158 @@
-"use client"; // Ensure this file is client-side
+"use client";
 
-import React, { useState } from "react";
-import { FaUser, FaCalendarAlt, FaGlobe } from "react-icons/fa"; // Import React Icons
+import React, { useState, useEffect } from "react";
+import { fetchTourDetails } from "../Api/tourDetails"; // Your API function
 
-interface CheckAvailabilityProps {
-  tourId: string; // Props for tourId
+interface person_types {
+  name: string;
+  min: number;
+  max: number;
+  price: number;
+  desc: string;
 }
 
-const CheckAvailability: React.FC<CheckAvailabilityProps> = ({ tourId }) => {
-  const [participants, setParticipants] = useState({
-    adult: 1,
-    children: 0,
-    infant: 0,
-  });
-  const [date, setDate] = useState("");
-  const [language, setLanguage] = useState("english");
-  const [isParticipantModalOpen, setParticipantModalOpen] = useState(false); // Modal visibility state
+const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
+  const [personTypes, setPersonTypes] = useState<person_types[]>([]); // State for person types
+  const [counts, setCounts] = useState<{ [key: string]: number }>({}); // Counts of each person type
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Ensure `category` is one of the keys in `participants`
-  const handleParticipantChange = (category: "adult" | "children" | "infant", action: "increment" | "decrement") => {
-    setParticipants((prev) => {
-      const updated = { ...prev };
-      if (action === "increment") updated[category] += 1;
-      else if (action === "decrement" && updated[category] > 0) updated[category] -= 1;
-      return updated;
+  // Fetch tour details and extract person types
+  useEffect(() => {
+    const getTourDetails = async () => {
+      try {
+        setLoading(true);
+        const tourDetails = await fetchTourDetails(tourId);
+
+        // Map the fetched person_types to numbers for price, min, and max
+        const fetchedPersonTypes =
+          tourDetails.data.person_types?.map((person_types: any) => ({
+            ...person_types,
+            min: Number(person_types.min),
+            max: Number(person_types.max),
+            price: Number(person_types.price),
+          })) || [];
+
+        setPersonTypes(fetchedPersonTypes);
+
+        // Initialize the counts with the minimum values
+        const initialCounts = fetchedPersonTypes.reduce(
+          (acc: { [key: string]: number }, person_types) => {
+            acc[person_types.name] = person_types.min;
+            return acc;
+          },
+          {}
+        );
+        setCounts(initialCounts);
+      } catch (err) {
+        setError("Failed to fetch tour details. Please try again later.");
+        console.error("Error fetching tour details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getTourDetails();
+  }, [tourId]);
+
+  // Handle increment and decrement for each person type
+  const handleCountChange = (name: string, action: "increase" | "decrease") => {
+    setCounts((prevCounts) => {
+      const currentCount = prevCounts[name];
+      const person_types = personTypes.find((type) => type.name === name);
+      if (person_types) {
+        const newCount =
+          action === "increase"
+            ? Math.min(currentCount + 1, person_types.max)
+            : Math.max(currentCount - 1, person_types.min);
+
+        return { ...prevCounts, [name]: newCount };
+      }
+      return prevCounts;
     });
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Tour ID: ${tourId}, Participants: ${JSON.stringify(participants)}, Date: ${date}, Language: ${language}`);
+  // Calculate the total price
+  const calculateTotalPrice = () => {
+    return personTypes.reduce((total, person_types) => {
+      const count = counts[person_types.name] || 0;
+      return total + count * person_types.price;
+    }, 0);
   };
 
+  // Handle form submission
+  const handleSubmit = () => {
+    const totalPrice = calculateTotalPrice();
+    alert(`Booking successful! Total Price: ${totalPrice}฿`);
+  };
+
+  // Loading state
+  if (loading) {
+    return <div className="text-center p-4">Loading tour details...</div>;
+  }
+
+  // Error handling
+  if (error) {
+    return <div className="text-center p-4 text-red-500">{error}</div>;
+  }
+
   return (
-    <div className="bg-primary p-6 rounded-lg text-white max-w-3xl shadow-lg">
-      <h2 className="text-lg font-bold mb-4">Select participants, date, and language</h2>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+        Tour Booking
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div
-          className="relative flex items-center bg-white text-black rounded-lg shadow px-4 py-2 cursor-pointer"
-          onClick={() => setParticipantModalOpen(!isParticipantModalOpen)}
-        >
-          <FaUser className="mr-2 text-lg" />
-          <span>{`${participants.adult} Adult(s), ${participants.children} Child(ren), ${participants.infant} Infant(s)`}</span>
-        </div>
-
-        {isParticipantModalOpen && (
-          <div className="absolute z-10 bg-white border rounded-lg shadow-lg mt-2 w-full p-4">
-            <div className="flex justify-between items-center mb-4">
-              <span>Adult (Age 11-99)</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("adult", "decrement")}
-                >
-                  -
-                </button>
-                <span>{participants.adult}</span>
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("adult", "increment")}
-                >
-                  +
-                </button>
-              </div>
+      {/* Dynamic Person Type Fields */}
+      {personTypes.length > 0 ? (
+        personTypes.map((person_types) => (
+          <div key={person_types.name} className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {person_types.name} ({person_types.desc})
+            </label>
+            <div className="flex items-center justify-between p-3 border rounded-md bg-gray-100">
+              <button
+                onClick={() => handleCountChange(person_types.name, "decrease")}
+                className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
+              >
+                -
+              </button>
+              <span className="text-lg">{counts[person_types.name]}</span>
+              <button
+                onClick={() => handleCountChange(person_types.name, "increase")}
+                className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
+              >
+                +
+              </button>
             </div>
-            <div className="flex justify-between items-center mb-4">
-              <span>Children (Age 4-10)</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("children", "decrement")}
-                >
-                  -
-                </button>
-                <span>{participants.children}</span>
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("children", "increment")}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Infant (Age 3 and younger)</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("infant", "decrement")}
-                >
-                  -
-                </button>
-                <span>{participants.infant}</span>
-                <button
-                  type="button"
-                  className="px-2 py-1 bg-gray-200 rounded"
-                  onClick={() => handleParticipantChange("infant", "increment")}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="w-full mt-4 bg-blue-600 text-white py-2 rounded"
-              onClick={() => setParticipantModalOpen(false)} // Close modal
-            >
-              Done
-            </button>
+            <p className="text-xs text-gray-500 mt-1">
+              {person_types.price}฿ per {person_types.name.toLowerCase()}
+            </p>
           </div>
-        )}
-
-        <div className="flex items-center bg-white text-black rounded-lg shadow px-4 py-2">
-          <FaCalendarAlt className="mr-2 text-lg" />
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="bg-transparent outline-none w-full"
-          />
+        ))
+      ) : (
+        <div className="text-center p-4">
+          <p className="text-gray-500">
+            No person types available for this tour.
+          </p>
         </div>
+      )}
 
- 
-        <div className="flex items-center bg-white text-black rounded-lg shadow px-4 py-2">
-          <FaGlobe className="mr-2 text-lg" />
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-transparent outline-none w-full"
-          >
-            <option value="english">English</option>
-            <option value="spanish">Spanish</option>
-            <option value="french">French</option>
-          </select>
-        </div>
+      {/* Total Price */}
+      <div className="mb-4">
+        <p className="text-lg font-semibold text-gray-700">
+          Total Price: {calculateTotalPrice()}฿
+        </p>
+      </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-        >
-          Check availability
-        </button>
-      </form>
-      
+      {/* Book Now Button */}
+      <button
+        onClick={handleSubmit}
+        className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+      >
+        Book Now
+      </button>
     </div>
   );
 };
 
-export default CheckAvailability;
+export default TourBookingForm;
