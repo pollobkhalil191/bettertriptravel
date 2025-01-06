@@ -12,7 +12,7 @@ interface person_types {
 }
 
 const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
-  const [personTypes, setPersonTypes] = useState<person_types[]>([]); // State for person types
+  const [person_types, setPersonTypes] = useState<person_types[]>([]); // State for person types
   const [counts, setCounts] = useState<{ [key: string]: number }>({}); // Counts of each person type
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,7 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
         // Map the fetched person_types to numbers for price, min, and max
         const fetchedPersonTypes =
-          tourDetails.data.person_types?.map((person_types: any) => ({
+          tourDetails.data.person_types?.map((person_types: person_types) => ({
             ...person_types,
             min: Number(person_types.min),
             max: Number(person_types.max),
@@ -59,12 +59,12 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
   const handleCountChange = (name: string, action: "increase" | "decrease") => {
     setCounts((prevCounts) => {
       const currentCount = prevCounts[name];
-      const person_types = personTypes.find((type) => type.name === name);
-      if (person_types) {
+      const personType = person_types.find((type) => type.name === name); // Use person_types here
+      if (personType) {
         const newCount =
           action === "increase"
-            ? Math.min(currentCount + 1, person_types.max)
-            : Math.max(currentCount - 1, person_types.min);
+            ? Math.min(currentCount + 1, personType.max)
+            : Math.max(currentCount - 1, personType.min);
 
         return { ...prevCounts, [name]: newCount };
       }
@@ -74,9 +74,9 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
   // Calculate the total price
   const calculateTotalPrice = () => {
-    return personTypes.reduce((total, person_types) => {
-      const count = counts[person_types.name] || 0;
-      return total + count * person_types.price;
+    return person_types.reduce((total, person_type) => {
+      const count = counts[person_type.name] || 0;
+      return total + count * person_type.price;
     }, 0);
   };
 
@@ -103,29 +103,29 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
       </h2>
 
       {/* Dynamic Person Type Fields */}
-      {personTypes.length > 0 ? (
-        personTypes.map((person_types) => (
-          <div key={person_types.name} className="mb-4">
+      {person_types.length > 0 ? (
+        person_types.map((person_type) => (
+          <div key={person_type.name} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {person_types.name} ({person_types.desc})
+              {person_type.name} ({person_type.desc})
             </label>
             <div className="flex items-center justify-between p-3 border rounded-md bg-gray-100">
               <button
-                onClick={() => handleCountChange(person_types.name, "decrease")}
+                onClick={() => handleCountChange(person_type.name, "decrease")}
                 className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
               >
                 -
               </button>
-              <span className="text-lg">{counts[person_types.name]}</span>
+              <span className="text-lg">{counts[person_type.name]}</span>
               <button
-                onClick={() => handleCountChange(person_types.name, "increase")}
+                onClick={() => handleCountChange(person_type.name, "increase")}
                 className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
               >
                 +
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {person_types.price}฿ per {person_types.name.toLowerCase()}
+              {person_type.price}฿ per {person_type.name.toLowerCase()}
             </p>
           </div>
         ))
