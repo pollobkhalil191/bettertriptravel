@@ -55,9 +55,9 @@ const ItineraryTourDetails = ({ tourId }: { tourId: string }) => {
 
   return (
     <div className="container mx-auto my-8 p-4 sm:p-6 lg:p-8">
-      <h1 className="text-2xl sm:text-3xl font-semibold text-start text-gray-800 mb-8">
+      <h2 className="text-2xl sm:text-3xl font-semibold text-start text-gray-800 mb-8">
         Itinerary
-      </h1>
+      </h2>
       <div className="relative border-l border-gray-300 pl-8">
         {itinerary.map((item, index) => (
           <div

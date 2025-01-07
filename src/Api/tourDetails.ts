@@ -7,6 +7,7 @@ import { Key } from "react";
 export interface TourDetailsResponse {
   itinerary: never[];
   data: {
+    booking_fee: { name: string; desc: string; price: number }[];
     person_types: never[];
     faqs: never[];
     itinerary: never[];

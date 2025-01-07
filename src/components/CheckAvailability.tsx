@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchTourDetails } from "../Api/tourDetails"; // Your API function
 
-interface person_types {
+interface PersonType {
   name: string;
   min: number;
   max: number;
@@ -12,38 +12,42 @@ interface person_types {
 }
 
 const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
-  const [person_types, setPersonTypes] = useState<person_types[]>([]); // State for person types
-  const [counts, setCounts] = useState<{ [key: string]: number }>({}); // Counts of each person type
+  const [personTypes, setPersonTypes] = useState<PersonType[]>([]);
+  const [counts, setCounts] = useState<{ [key: string]: number }>({});
+  const [name, setName] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(""); // Date selection
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [salePrice, setSalePrice] = useState<number>(0); // Sale price fetched from API
 
-  // Fetch tour details and extract person types
   useEffect(() => {
     const getTourDetails = async () => {
       try {
         setLoading(true);
         const tourDetails = await fetchTourDetails(tourId);
 
-        // Map the fetched person_types to numbers for price, min, and max
         const fetchedPersonTypes =
-          tourDetails.data.person_types?.map((person_types: person_types) => ({
-            ...person_types,
-            min: Number(person_types.min),
-            max: Number(person_types.max),
-            price: Number(person_types.price),
+          tourDetails.data.person_types?.map((person_type: PersonType) => ({
+            ...person_type,
+            min: Number(person_type.min),
+            max: Number(person_type.max),
+            price: Number(person_type.price),
           })) || [];
 
         setPersonTypes(fetchedPersonTypes);
 
-        // Initialize the counts with the minimum values
         const initialCounts = fetchedPersonTypes.reduce(
-          (acc: { [key: string]: number }, person_types) => {
-            acc[person_types.name] = person_types.min;
+          (acc: { [key: string]: number }, person_type) => {
+            acc[person_type.name] =
+              person_type.name === "Adult" ? 1 : person_type.min; // Default 1 adult
             return acc;
           },
           {}
         );
         setCounts(initialCounts);
+
+        const fetchedSalePrice = tourDetails.data.sale_price || 0;
+        setSalePrice(Number(fetchedSalePrice));
       } catch (err) {
         setError("Failed to fetch tour details. Please try again later.");
         console.error("Error fetching tour details:", err);
@@ -59,7 +63,7 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
   const handleCountChange = (name: string, action: "increase" | "decrease") => {
     setCounts((prevCounts) => {
       const currentCount = prevCounts[name];
-      const personType = person_types.find((type) => type.name === name); // Use person_types here
+      const personType = personTypes.find((type) => type.name === name);
       if (personType) {
         const newCount =
           action === "increase"
@@ -74,37 +78,80 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
   // Calculate the total price
   const calculateTotalPrice = () => {
-    return person_types.reduce((total, person_type) => {
-      const count = counts[person_type.name] || 0;
-      return total + count * person_type.price;
-    }, 0);
+    let totalPrice = salePrice;
+
+    // Check for "Adult" person type and add 1,000 for each additional adult beyond the first
+    const adultCount = counts["Adult"] || 0;
+    if (adultCount > 1) {
+      totalPrice += (adultCount - 1) * 1000; // Add 1,000 for each extra adult
+    }
+
+    return Math.round(totalPrice);
   };
 
   // Handle form submission
   const handleSubmit = () => {
+    if (!selectedDate) {
+      alert("Please select a date.");
+      return;
+    }
     const totalPrice = calculateTotalPrice();
-    alert(`Booking successful! Total Price: ${totalPrice}฿`);
+    alert(
+      `Booking successful! \nName: ${name}\nDate: ${selectedDate}\nTotal Price: ${totalPrice}฿`
+    );
   };
 
-  // Loading state
   if (loading) {
     return <div className="text-center p-4">Loading tour details...</div>;
   }
 
-  // Error handling
   if (error) {
     return <div className="text-center p-4 text-red-500">{error}</div>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+    <div id="2" className="max-w-xl p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 lg:text-start">
         Tour Booking
       </h2>
 
+      {/* Initial Sale Price */}
+      <div className="mb-4">
+        <p className="text-lg font-semibold text-gray-700">
+          Sale Price: {salePrice}฿
+        </p>
+      </div>
+
+      {/* Name Input */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Your Name
+        </label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full p-2 border rounded-md"
+          placeholder="Enter your name"
+        />
+      </div>
+
+      {/* Date Selection */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Date
+        </label>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        />
+      </div>
+
       {/* Dynamic Person Type Fields */}
-      {person_types.length > 0 ? (
-        person_types.map((person_type) => (
+      {personTypes.length > 0 ? (
+        personTypes.map((person_type) => (
           <div key={person_type.name} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {person_type.name} ({person_type.desc})
@@ -124,9 +171,6 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
                 +
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {person_type.price}฿ per {person_type.name.toLowerCase()}
-            </p>
           </div>
         ))
       ) : (
