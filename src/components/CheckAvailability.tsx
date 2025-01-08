@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { fetchTourDetails } from "../Api/tourDetails"; // Your API function
+import { fetchTourDetails } from "../Api/tourDetails"; // Replace with your actual API function
+import CheckAvailabilityForm from "./check";
 
 interface PersonType {
   name: string;
@@ -11,15 +12,23 @@ interface PersonType {
   desc: string;
 }
 
+interface BookingFee {
+  name: string;
+  desc: string;
+  price: number;
+}
+
 const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
   const [personTypes, setPersonTypes] = useState<PersonType[]>([]);
   const [counts, setCounts] = useState<{ [key: string]: number }>({});
-  const [name, setName] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(""); // Date selection
+  const [salePrice, setSalePrice] = useState<number>(0);
+  const [bookingFee, setBookingFee] = useState<BookingFee | null>(null);
+  const [includeFee, setIncludeFee] = useState<boolean>(false); // State for checkbox
+  const [selectedDate, setSelectedDate] = useState<string>(""); // Date picker state
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [salePrice, setSalePrice] = useState<number>(0); // Sale price fetched from API
 
+  // Fetch tour details and initialize data
   useEffect(() => {
     const getTourDetails = async () => {
       try {
@@ -38,8 +47,7 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
         const initialCounts = fetchedPersonTypes.reduce(
           (acc: { [key: string]: number }, person_type) => {
-            acc[person_type.name] =
-              person_type.name === "Adult" ? 1 : person_type.min; // Default 1 adult
+            acc[person_type.name] = person_type.min; // Minimum count from API
             return acc;
           },
           {}
@@ -48,9 +56,18 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
         const fetchedSalePrice = tourDetails.data.sale_price || 0;
         setSalePrice(Number(fetchedSalePrice));
+
+        const fetchedBookingFee = tourDetails.data.booking_fee?.[0] || null;
+        if (fetchedBookingFee) {
+          setBookingFee({
+            name: fetchedBookingFee.name,
+            desc: fetchedBookingFee.desc,
+            price: Number(fetchedBookingFee.price),
+          });
+        }
       } catch (err) {
         setError("Failed to fetch tour details. Please try again later.");
-        console.error("Error fetching tour details:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -69,7 +86,6 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
           action === "increase"
             ? Math.min(currentCount + 1, personType.max)
             : Math.max(currentCount - 1, personType.min);
-
         return { ...prevCounts, [name]: newCount };
       }
       return prevCounts;
@@ -78,123 +94,123 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
 
   // Calculate the total price
   const calculateTotalPrice = () => {
-    let totalPrice = salePrice;
+    let totalPrice = salePrice; // Start with the base sale price (for 1 adult)
 
-    // Check for "Adult" person type and add 1,000 for each additional adult beyond the first
+    // Add 1000฿ for each additional adult
     const adultCount = counts["Adult"] || 0;
     if (adultCount > 1) {
-      totalPrice += (adultCount - 1) * 1000; // Add 1,000 for each extra adult
+      totalPrice += (adultCount - 1) * 1000; // 1000฿ for each additional adult
     }
 
-    return Math.round(totalPrice);
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    if (!selectedDate) {
-      alert("Please select a date.");
-      return;
+    // Add price for children
+    const childCount = counts["Child"] || 0;
+    if (childCount > 0) {
+      const childPrice =
+        personTypes.find((pt) => pt.name === "Child")?.price || 0;
+      totalPrice += childCount * childPrice;
     }
-    const totalPrice = calculateTotalPrice();
-    alert(
-      `Booking successful! \nName: ${name}\nDate: ${selectedDate}\nTotal Price: ${totalPrice}฿`
-    );
+
+    // Add service fee if the checkbox is checked
+    if (includeFee && bookingFee) {
+      totalPrice += bookingFee.price;
+    }
+
+    return totalPrice; // Return the calculated total price
   };
 
   if (loading) {
-    return <div className="text-center p-4">Loading tour details...</div>;
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div className="text-center p-4 text-red-500">{error}</div>;
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
-    <div id="2" className="max-w-xl p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 lg:text-start">
-        Tour Booking
-      </h2>
+    <div className="max-w-xl  p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4">Tour Booking</h1>
 
-      {/* Initial Sale Price */}
-      <div className="mb-4">
-        <p className="text-lg font-semibold text-gray-700">
-          Sale Price: {salePrice}฿
-        </p>
-      </div>
+      {/* Sale Price */}
+      <p className="text-lg font-medium mb-4">{salePrice}฿</p>
 
-      {/* Name Input */}
+      {/* Select Date */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Your Name
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border rounded-md"
-          placeholder="Enter your name"
-        />
-      </div>
-
-      {/* Date Selection */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700">
           Select Date
         </label>
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="w-full p-2 border rounded-md"
+          className="w-full mt-2 p-2 border rounded-md"
         />
       </div>
 
-      {/* Dynamic Person Type Fields */}
-      {personTypes.length > 0 ? (
-        personTypes.map((person_type) => (
-          <div key={person_type.name} className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {person_type.name} ({person_type.desc})
-            </label>
-            <div className="flex items-center justify-between p-3 border rounded-md bg-gray-100">
-              <button
-                onClick={() => handleCountChange(person_type.name, "decrease")}
-                className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
-              >
-                -
-              </button>
-              <span className="text-lg">{counts[person_type.name]}</span>
-              <button
-                onClick={() => handleCountChange(person_type.name, "increase")}
-                className="px-3 py-1 bg-gray-300 rounded-md text-gray-700 hover:bg-gray-400"
-              >
-                +
-              </button>
-            </div>
+      {/* Person Type Fields */}
+      {personTypes.map((person_type) => (
+        <div key={person_type.name} className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            {person_type.name} ({person_type.desc})
+          </label>
+          <div className="flex items-center justify-between mt-2">
+            <button
+              onClick={() => handleCountChange(person_type.name, "decrease")}
+              className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            >
+              -
+            </button>
+            <span>{counts[person_type.name]}</span>
+            <button
+              onClick={() => handleCountChange(person_type.name, "increase")}
+              className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            >
+              +
+            </button>
           </div>
-        ))
-      ) : (
-        <div className="text-center p-4">
-          <p className="text-gray-500">
-            No person types available for this tour.
+          <p className="text-sm text-gray-500 mt-1">
+            {person_type.price}฿ per {person_type.name.toLowerCase()}
           </p>
+        </div>
+      ))}
+
+      {/* Service Fee Checkbox */}
+      {bookingFee && (
+        <div className="mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={includeFee}
+              onChange={(e) => setIncludeFee(e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              {bookingFee.name} (+{bookingFee.price}฿)
+            </span>
+          </label>
+          <p className="text-xs text-gray-500">{bookingFee.desc}</p>
         </div>
       )}
 
       {/* Total Price */}
-      <div className="mb-4">
-        <p className="text-lg font-semibold text-gray-700">
+      <div className="mt-6">
+        <p className="text-lg font-medium">
           Total Price: {calculateTotalPrice()}฿
         </p>
       </div>
 
-      {/* Book Now Button */}
+      {/* Submit Button */}
       <button
-        onClick={handleSubmit}
-        className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        onClick={() =>
+          alert(`Booking successful! Total price: ${calculateTotalPrice()}฿`)
+        }
+        className="w-full mt-4 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700"
       >
         Book Now
       </button>
+
+      <div>
+        <CheckAvailabilityForm />
+      </div>
     </div>
   );
 };

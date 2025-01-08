@@ -116,6 +116,8 @@ const ParisTours = () => {
             transitionDuration={500}
             containerClass="carousel-container"
             itemClass="px-3" // Add gap between cards
+            customLeftArrow={null} // Remove left arrow
+            customRightArrow={null} // Remove right arrow
           >
             {tours.map((tour, index) => (
               <motion.div

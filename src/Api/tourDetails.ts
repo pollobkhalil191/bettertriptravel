@@ -1,12 +1,12 @@
 // api/tourDetails.ts
 
 import axios from "axios";
-import { Key } from "react";
 
 // Define the type for the tour details response
 export interface TourDetailsResponse {
-  itinerary: never[];
   data: {
+    is_featured: boolean;
+    image: string;
     booking_fee: { name: string; desc: string; price: number }[];
     person_types: never[];
     faqs: never[];
@@ -24,7 +24,6 @@ export interface TourDetailsResponse {
     min_people: number;
     address: string;
     location: { name: string };
-    params: { id: string };
     gallery: string[];
     banner_image: string;
     video?: string;
@@ -43,11 +42,10 @@ export interface TourDetailsResponse {
         }
       >;
     };
-
     review_lists?: {
       data: {
         data: unknown;
-        id: Key | null | undefined;
+        id: number | null | undefined;
         created_at: string;
         author: {
           country: string;
@@ -58,6 +56,15 @@ export interface TourDetailsResponse {
       }[];
     };
   };
+  related_tours: {
+    id: number;
+    title: string;
+    price: number;
+    sale_price: number;
+    discount_percent: string;
+    image: string;
+    location: { name: string };
+  }[];
 }
 
 // Fetch details of a single tour

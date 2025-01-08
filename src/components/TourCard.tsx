@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +9,16 @@ import Button from "./button"; // Import the Button component
 interface ReviewScore {
   score_total: number;
   total_review: number;
+}
+
+interface TourCardProps {
+  id: number; // Add id here
+  title: string;
+  price: number;
+  sale_price: number;
+  discount_percent: string;
+  image: string;
+  location: string;
 }
 
 interface Tour {
