@@ -116,20 +116,25 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <div className="relative mb-12 w-full h-[80vh]">
+
+      <div className="relative mb-12 w-full h-[60vh]">
         {currentLocationImage ? (
-          <Image
-            src={currentLocationImage}
-            alt="Hero Image"
-            width={1600}
-            height={600}
-            className="w-full h-full object-cover"
-          />
+          <>
+            <Image
+              src={currentLocationImage}
+              alt="Hero Image"
+              width={1600}
+              height={400}
+              className="w-full h-full object-cover"
+            />
+            {/* Transparent black overlay */}
+            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          </>
         ) : null}
       </div>
 
       {/* Location Selector */}
-      <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-[72px] mb-8 w-full">
+      <div className="flex justify-center items-center -mt-28 px-10 md:px-10 lg:px-64 mb-8 w-full">
         <Swiper
           spaceBetween={10}
           slidesPerView={4}
@@ -138,7 +143,7 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
             768: { slidesPerView: 3, spaceBetween: 15 },
             1024: { slidesPerView: 4, spaceBetween: 20 },
           }}
-          className="w-full px-28"
+          className="w-full px-64"
         >
           {locations.map((location) => (
             <SwiperSlide key={location.id}>
@@ -159,13 +164,13 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
 
       {/* Tours Section */}
       {error ? (
-        <div className="text-center text-lg text-red-600">{error}</div>
+        <div className="text-center text-lg lg:px-64 text-red-600">{error}</div>
       ) : tours.length === 0 ? (
         <div className="text-center text-lg text-gray-600">
           No tours available for the selected location
         </div>
       ) : (
-        <div className="w-full px-6 md:px-10 lg:px-20">
+        <div className="w-full px-6 md:px-10 lg:px-64">
           <Carousel
             responsive={responsive}
             infinite={true}

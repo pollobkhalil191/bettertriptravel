@@ -61,7 +61,7 @@ export default function NavBar() {
   return (
     <>
       <nav
-        className={`navbar bg-base-100 shadow-md block px-5 lg:px-20 ${
+        className={`navbar bg-base-100 shadow-md block px-5 lg:px-64 ${
           isSticky ? "sticky-header" : ""
         }`}
       >

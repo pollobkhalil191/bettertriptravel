@@ -91,7 +91,7 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   }, [locationId]);
 
   return (
-    <div className="px-5 py-8 lg:px-20">
+    <div className="px-5 py-8 lg:px-64">
       {/* Location Tabs */}
       <div className="flex gap-4 mb-6 border-b-2 pb-4">
         {locations.map((location) => (
@@ -173,13 +173,13 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
             </Link>
 
             {/* Add to Cart Button */}
-            <div className="p-4">
+            {/* <div className="p-4">
               <Button
                 onClick={() => handleAddToCart(tour)}
                 label="Add to Cart"
                 className="w-full mt-4"
               />
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

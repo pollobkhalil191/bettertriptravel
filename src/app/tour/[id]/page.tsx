@@ -8,8 +8,9 @@ import ReviewComponent from "@/components/review";
 
 import ItineraryTourDetails from "@/components/tourDetails/itinerary";
 import Link from "next/link";
-import CheckAvailability from "@/components/CheckAvailability";
+
 import FAQsComponent from "@/components/faq";
+import TourBookingForm from "@/components/TourBooking";
 
 // Define the Tour details type
 interface Tour {
@@ -106,7 +107,7 @@ const TourDetails = async ({ params }: PageProps) => {
   } = tour;
 
   return (
-    <div className=" mx-auto px-6 lg:px-20 py-12">
+    <div className=" mx-auto px-6 lg:px-64 py-12">
       <h1 className="text-4xl font-extrabold text-gray-900 mb-6">{title}</h1>
 
       <div className="review-score mb-8">
@@ -311,7 +312,7 @@ const TourDetails = async ({ params }: PageProps) => {
       </div>
 
       <div id="2" className="location-section mb-8">
-        <CheckAvailability tourId={id} />
+        <TourBookingForm tourId={id} />
       </div>
 
       <div>

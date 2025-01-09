@@ -9,7 +9,9 @@ const TourPage = () => {
   const searchParams = useSearchParams();
   const queryLocationId = searchParams?.get("location_id");
 
-  const parsedLocationId = queryLocationId ? parseInt(queryLocationId, 10) : null;
+  const parsedLocationId = queryLocationId
+    ? parseInt(queryLocationId, 10)
+    : null;
 
   // Set the locationId from the query string if available
   useEffect(() => {
@@ -22,8 +24,17 @@ const TourPage = () => {
     <div>
       {/* Wrap the TourCard component in a Suspense boundary */}
       <Suspense fallback={<div>Loading...</div>}>
-    
-        <TourCard locationId={locationId} setLocationId={setLocationId} />
+        <TourCard
+          locationId={locationId}
+          setLocationId={setLocationId}
+          id={0}
+          title={""}
+          price={0}
+          sale_price={0}
+          discount_percent={""}
+          image={""}
+          location={""}
+        />
       </Suspense>
     </div>
   );

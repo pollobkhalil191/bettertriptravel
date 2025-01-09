@@ -1,11 +1,42 @@
+"use client";
+
 import { useState } from "react";
+
+// Define types for the API response
+type PersonType = {
+  name: string;
+  desc: string;
+  min: string;
+  max: string;
+  price: string;
+  display_price: string;
+  number: string;
+};
+
+type AvailabilityItem = {
+  id: number;
+  active: number;
+  price: string;
+  is_default: boolean;
+  textColor: string;
+  price_html: string;
+  max_guests: number;
+  title_origin: string;
+  event: string;
+  title: string;
+  end: string;
+  start: string;
+  person_types: PersonType[];
+};
 
 const CheckAvailabilityForm = () => {
   const [tourId, setTourId] = useState("6"); // Default tour ID
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [forSingle, setForSingle] = useState("1"); // Default single person
-  const [availability, setAvailability] = useState<any[] | null>(null);
+  const [availability, setAvailability] = useState<AvailabilityItem[] | null>(
+    null
+  );
   const [error, setError] = useState("");
 
   const fetchAvailability = async (e: React.FormEvent) => {
@@ -27,10 +58,14 @@ const CheckAvailabilityForm = () => {
         throw new Error("Failed to fetch availability.");
       }
 
-      const data = await response.json();
+      const data: AvailabilityItem[] = await response.json();
       setAvailability(data);
     } catch (err) {
-      setError(err.message || "An error occurred while fetching availability.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching availability."
+      );
     }
   };
 
@@ -106,7 +141,7 @@ const CheckAvailabilityForm = () => {
           <h2 className="text-xl font-medium mb-4">Availability Results:</h2>
           {availability.length > 0 ? (
             <ul className="space-y-4">
-              {availability.map((item: any) => (
+              {availability.map((item) => (
                 <li
                   key={item.id}
                   className="p-4 border rounded-md shadow-sm bg-gray-50"
@@ -124,7 +159,7 @@ const CheckAvailabilityForm = () => {
                     <strong>Details:</strong> {item.event}
                   </p>
                   <ul className="mt-2 space-y-1">
-                    {item.person_types.map((type: any, index: number) => (
+                    {item.person_types.map((type, index) => (
                       <li key={index}>
                         <strong>{type.name}:</strong> {type.desc} | Price:{" "}
                         {type.display_price}

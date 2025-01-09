@@ -100,7 +100,7 @@ export default function Destination() {
   }, []);
 
   return (
-    <section className="py-10 px-5 lg:px-20">
+    <section className="py-10 px-5 lg:px-64">
       <h2 className="text-2xl font-bold text-left mb-6">
         Awe-inspiring destinations around the world
       </h2>
@@ -117,12 +117,12 @@ export default function Destination() {
           <motion.div
             key={destination.id}
             initial={{ x: -100, opacity: 0 }} // Start off-screen to the left
-            animate={{ x: 0, opacity: 1 }}   // Animate into position
+            animate={{ x: 0, opacity: 1 }} // Animate into position
             transition={{
-              delay: index * 0.2,             // Add stagger for each item
-              duration: 0.6,                 // Duration of the animation
-              type: "spring",                // Spring effect for smoother entry
-              stiffness: 50,                 // Adjust spring stiffness
+              delay: index * 0.2, // Add stagger for each item
+              duration: 0.6, // Duration of the animation
+              type: "spring", // Spring effect for smoother entry
+              stiffness: 50, // Adjust spring stiffness
             }}
           >
             <Link

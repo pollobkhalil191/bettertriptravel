@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { fetchTourDetails } from "../Api/tourDetails"; // Replace with your actual API function
-import CheckAvailabilityForm from "./check";
+import CheckAvailabilityForm from "./checkAvailibility";
 
 interface PersonType {
   name: string;
@@ -127,7 +127,11 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
   }
 
   return (
-    <div className="max-w-xl  p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-xl  p-6 bg-white  ">
+      <div>
+        <CheckAvailabilityForm tourId={tourId} />
+      </div>
+
       <h1 className="text-2xl font-bold mb-4">Tour Booking</h1>
 
       {/* Sale Price */}
@@ -207,10 +211,6 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
       >
         Book Now
       </button>
-
-      <div>
-        <CheckAvailabilityForm />
-      </div>
     </div>
   );
 };
