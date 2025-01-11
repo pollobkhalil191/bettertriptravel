@@ -1,24 +1,15 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchAllToursByLocation } from "../Api/tourService";
 import { FaHeart } from "react-icons/fa";
+import { fetchAllToursByLocation } from "../Api/tourService"; // Ensure this service handles API calls
 import Button from "./button"; // Import the Button component
 
 interface ReviewScore {
   score_total: number;
   total_review: number;
-}
-
-interface TourCardProps {
-  id: number; // Add id here
-  title: string;
-  price: number;
-  sale_price: number;
-  discount_percent: string;
-  image: string;
-  location: string;
 }
 
 interface Tour {
@@ -28,6 +19,7 @@ interface Tour {
   duration: string;
   price: number;
   sale_price?: number;
+  discount_percent?: string;
   review_score: ReviewScore;
   location?: {
     name: string;
@@ -66,14 +58,14 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
       try {
         setLoading(true);
         const locationIdToUse = locationId ?? 0; // Use 0 to fetch all tours
-        const data: TourResponse = await fetchAllToursByLocation(
+        const response: TourResponse = await fetchAllToursByLocation(
           locationIdToUse
         );
 
-        console.log("API Response:", data); // Debugging API response
+        console.log("API Response:", response); // Debugging API response
 
-        if (data?.data && Array.isArray(data.data) && data.data.length > 0) {
-          setTours(data.data);
+        if (response?.data && Array.isArray(response.data)) {
+          setTours(response.data);
           setError(null);
         } else {
           setTours([]);
@@ -173,13 +165,13 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
             </Link>
 
             {/* Add to Cart Button */}
-            {/* <div className="p-4">
+            <div className="p-4">
               <Button
                 onClick={() => handleAddToCart(tour)}
                 label="Add to Cart"
                 className="w-full mt-4"
               />
-            </div> */}
+            </div>
           </div>
         ))}
       </div>

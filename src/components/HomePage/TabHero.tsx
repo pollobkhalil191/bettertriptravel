@@ -116,19 +116,27 @@ export default function TourCard({ locationId, setLocationId }: TourCardProps) {
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-
       <div className="relative mb-12 w-full h-[60vh]">
         {currentLocationImage ? (
           <>
-            <Image
-              src={currentLocationImage}
-              alt="Hero Image"
-              width={1600}
-              height={400}
-              className="w-full h-full object-cover"
-            />
-            {/* Transparent black overlay */}
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            {/* Smoothly Fading Hero Image */}
+            <motion.div
+              className="w-full h-full"
+              initial={{ opacity: 0 }} // Start invisible
+              animate={{ opacity: 1 }} // Fade in smoothly
+              transition={{ duration: 1.5 }} // Duration of the fade-in (1.5s)
+            >
+              <Image
+                src={currentLocationImage}
+                alt="Hero Image"
+                width={1600}
+                height={400}
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+
+            {/* Black Gradient at Bottom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
           </>
         ) : null}
       </div>

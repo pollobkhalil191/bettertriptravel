@@ -10,6 +10,7 @@ interface PersonType {
   max: number;
   price: number;
   desc: string;
+  id: number;
 }
 
 interface BookingFee {
