@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
 import { fetchAllToursByLocation } from "../Api/tourService"; // Ensure this service handles API calls
-import Button from "./button"; // Import the Button component
 
 interface ReviewScore {
   score_total: number;
@@ -49,9 +48,9 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   const [error, setError] = useState<string | null>(null);
 
   // Function to handle adding tours to the cart
-  const handleAddToCart = (tour: Tour) => {
-    alert(`${tour.title} has been added to your cart!`);
-  };
+  // const handleAddToCart = (tour: Tour) => {
+  //   alert(`${tour.title} has been added to your cart!`);
+  // };
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -165,13 +164,13 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
             </Link>
 
             {/* Add to Cart Button */}
-            <div className="p-4">
+            {/* <div className="p-4">
               <Button
                 onClick={() => handleAddToCart(tour)}
                 label="Add to Cart"
                 className="w-full mt-4"
               />
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

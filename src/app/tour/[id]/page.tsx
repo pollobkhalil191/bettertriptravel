@@ -284,7 +284,7 @@ const TourDetails = async ({ params }: PageProps) => {
         {/* Review section  */}
 
         <div className="flex flex-col lg:w-1/3 space-y-6 lg:space-y-8">
-          <div className="price-section flex items-center justify-between border-2 border-t-4 border-t-blue-600 bg-white p-6 shadow-sm">
+          <div className="price-section flex items-center justify-between border-2 border-t-4 border-t-primary bg-white p-6 shadow-sm">
             {sale_price !== "N/A" && (
               <p className="text-3xl font-semibold text-primary">
                 <span className="text-sm text-primary">From</span> <br />$
@@ -297,7 +297,7 @@ const TourDetails = async ({ params }: PageProps) => {
             <Link href="#2">
               <button
                 type="submit"
-                className="bg-blue-500 text-white py-3 px-6 rounded-full hover:bg-blue-600 transition duration-300"
+                className="bg-primary text-white py-3 px-6 rounded-full hover:bg-blue-600 transition duration-300"
               >
                 Check Availability
               </button>
