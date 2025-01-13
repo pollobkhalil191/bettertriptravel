@@ -28,10 +28,10 @@ const TourPage = () => {
   );
 };
 
-const TourPageWithSuspense = () => (
-  <Suspense fallback={<div>Loading page...</div>}>
-    <TourPage />
-  </Suspense>
-);
+// const TourPageWithSuspense = () => (
+//   <Suspense fallback={<div>Loading page...</div>}>
+//     <TourPage />
+//   </Suspense>
+// );
 
-export default TourPageWithSuspense;
+export default TourPage;

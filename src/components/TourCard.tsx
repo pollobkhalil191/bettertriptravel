@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaHeart } from "react-icons/fa";
 import { fetchAllToursByLocation } from "../Api/tourService"; // Ensure this service handles API calls
+import FilterButton from "./tourFilters";
 
 interface ReviewScore {
   score_total: number;
@@ -82,22 +83,27 @@ const TourCard = ({ locationId, setLocationId }: TourCardProps) => {
   }, [locationId]);
 
   return (
-    <div className="px-5 py-8 lg:px-64">
+    <div className="px-5 mt-9 py-8 lg:px-64">
       {/* Location Tabs */}
-      <div className="flex gap-4 mb-6 border-b-2 pb-4">
-        {locations.map((location) => (
-          <button
-            key={location.id}
-            onClick={() => setLocationId(location.id)}
-            className={`px-4 py-2 text-sm font-medium rounded ${
-              locationId === location.id
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
-          >
-            {location.name}
-          </button>
-        ))}
+      <div className="flex gap-4 mb-6 justify-between border-b-2 pb-4">
+        <div className="flex gap-4 mb-6  ">
+          {locations.map((location) => (
+            <button
+              key={location.id}
+              onClick={() => setLocationId(location.id)}
+              className={`px-4 py-2 text-sm font-medium rounded ${
+                locationId === location.id
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+              }`}
+            >
+              {location.name}
+            </button>
+          ))}
+        </div>
+        <div>
+          <FilterButton />
+        </div>
       </div>
 
       {/* Loading/Error/No Tours */}
