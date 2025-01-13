@@ -1,14 +1,15 @@
-import { useState, useContext } from "react";
-import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // Importing AuthContext
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useAuth } from "../context/AuthContext";
 
-// Define the types for the props
 interface AddToCartButtonProps {
   tourId: number;
-  adultGuests: number; // Number of adult guests
-  childGuests: number; // Number of child guests
-  serviceFee: number; // Service fee (if applicable)
-  startDate: Date | null; // Start date for the tour
+  adultGuests: number;
+  childGuests: number;
+  serviceFee: number;
+  startDate: Date | null;
+  guests: number;
+  token: string;
 }
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
@@ -18,36 +19,31 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   serviceFee,
   startDate,
 }) => {
-  const { isAuthenticated } = useAuth(); // Access authentication state
+  const { isAuthenticated, token } = useAuth(); // Access authentication state and token
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Function to handle adding to cart
+  // Custom type guard to check if the error is an AxiosError
+  const isAxiosError = (error: unknown): error is AxiosError => {
+    return (error as AxiosError).isAxiosError !== undefined;
+  };
+
   const handleAddToCart = async () => {
     if (!startDate) {
       setError("Please select a start date before adding to cart.");
       return;
     }
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !token) {
       setError("You need to be logged in to add to cart.");
       return;
     }
 
-    setError(null); // Clear any existing errors
-    setLoading(true); // Show loading state
+    setError(null);
+    setLoading(true);
 
-    const token = localStorage.getItem("access_token"); // Get token from local storage
-    if (!token) {
-      setError("No token found. Please log in.");
-      setLoading(false);
-      return;
-    }
+    const startDateString = startDate.toISOString().split("T")[0];
 
-    const service_id = tourId; // Set the service ID dynamically
-    const startDateString = startDate.toISOString().split("T")[0]; // Format the start date
-
-    // Constructing the "person_types" array with the number of guests for adults and children
     const personTypes = [
       {
         name: "Adult",
@@ -69,9 +65,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       },
     ];
 
-    // Constructing the payload for the POST request
     const payload = {
-      service_id: service_id,
+      service_id: tourId,
       service_type: "tour",
       start_date: startDateString,
       person_types: personTypes,
@@ -89,41 +84,43 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
               },
             ]
           : [],
-      guests: adultGuests + childGuests, // Total guests count
+      guests: adultGuests + childGuests,
     };
 
     try {
-      console.log("Sending request...");
-      // Sending the POST request with the payload
       const response = await axios.post(
         "https://btt.triumphdigital.co.th/api/booking/addToCart",
         payload,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      console.log(response); // Log the response for debugging
-
-      // Handling the response from the server
       if (response.data.status === 1) {
-        alert(
-          `Added to cart successfully! Booking Code: ${response.data.booking_code}`
-        );
-        window.location.href = response.data.url; // Redirect to checkout
+        const { booking_code, url } = response.data;
+        alert(`Added to cart successfully! Booking Code: ${booking_code}`);
+        window.location.href = url;
       } else {
         setError(response.data.message || "Failed to add to cart.");
       }
-    } catch (err: any) {
-      console.error(err); // Log the error for debugging
-      setError(
-        err?.response?.data?.message ||
-          "An error occurred while adding to cart."
-      );
+    } catch (err: unknown) {
+      if (isAxiosError(err)) {
+        // Define the type of response data to include the 'message' property
+        const responseData = err.response?.data as { message?: string };
+        const errorMessage =
+          responseData?.message || "An error occurred while adding to cart.";
+        setError(errorMessage);
+      } else if (err instanceof Error) {
+        // Fallback for other types of errors (e.g., network error)
+        setError(err.message || "An unexpected error occurred.");
+      } else {
+        // Generic fallback for unknown errors
+        setError("An unexpected error occurred.");
+      }
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 

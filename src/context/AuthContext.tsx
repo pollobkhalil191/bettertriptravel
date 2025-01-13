@@ -1,11 +1,11 @@
-// src/context/AuthContext.tsx
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: () => void;
+  token: string | null; // Add token here
+  login: (token: string) => void; // Accept token during login
   logout: () => void;
 }
 
@@ -13,23 +13,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    setIsAuthenticated(!!token); // Check if the token exists to determine authentication state
+    const savedToken = localStorage.getItem("access_token");
+    if (savedToken) {
+      setToken(savedToken);
+      setIsAuthenticated(true);
+    }
   }, []);
 
-  const login = () => {
+  const login = (token: string) => {
+    localStorage.setItem("access_token", token); // Save token to localStorage
+    setToken(token);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem("access_token"); // Remove token
+    setToken(null);
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

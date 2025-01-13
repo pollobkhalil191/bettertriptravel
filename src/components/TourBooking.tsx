@@ -23,8 +23,6 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
   const [counts, setCounts] = useState<{ [key: string]: number }>({});
   const [salePrice, setSalePrice] = useState<number>(0);
   const [bookingFee, setBookingFee] = useState<BookingFee | null>(null);
-  const [includeFee, setIncludeFee] = useState<boolean>(false); // State for checkbox
-  const [selectedDate, setSelectedDate] = useState<string>(""); // Date picker state
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,8 +112,8 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
     totalPrice += salePrice;
 
     // Add service fee if the checkbox is checked
-    if (includeFee && bookingFee) {
-      totalPrice += bookingFee.price;
+    // Add service fee if booking fee exists
+    if (bookingFee) {
     }
 
     return totalPrice;
@@ -133,6 +131,27 @@ const TourBookingForm = ({ tourId }: { tourId: string | number }) => {
     <div className="max-w-xl p-6 bg-white shadow-md rounded-md">
       <div>
         <CheckAvailabilityForm tourId={tourId} />
+      </div>
+      <div className="mt-4">
+        {personTypes.map((personType) => (
+          <div key={personType.name}>
+            <span>{personType.name}</span>
+            <button
+              onClick={() => handleCountChange(personType.name, "decrease")}
+            >
+              -
+            </button>
+            <span>{counts[personType.name]}</span>
+            <button
+              onClick={() => handleCountChange(personType.name, "increase")}
+            >
+              +
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4">
+        <h3>Total Price: ${calculateTotalPrice().toFixed(2)}</h3>
       </div>
     </div>
   );

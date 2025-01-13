@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, ReactNode } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -262,11 +260,13 @@ const CheckAvailabilityForm = ({ tourId }: { tourId: string | number }) => {
           </div>
           <div className="flex space-x-4 mt-4">
             <AddToCartButton
-              tourId={tourId}
-              guests={guests.adult + guests.child}
+              tourId={Number(tourId)}
+              adultGuests={guests.adult}
+              childGuests={guests.child}
               serviceFee={serviceFee ? 100 : 0}
               startDate={startDate}
               token={token}
+              guests={0}
             />
           </div>
         </div>

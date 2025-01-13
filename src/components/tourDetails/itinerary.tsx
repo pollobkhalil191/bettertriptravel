@@ -23,7 +23,7 @@ const ItineraryTourDetails = ({ tourId }: { tourId: string }) => {
         setLoading(true);
         const response: TourDetailsResponse = await fetchTourDetails(tourId);
         setItinerary(response?.data?.itinerary || []);
-      } catch (err: any) {
+      } catch {
         setError("Failed to load itinerary. Please try again later.");
       } finally {
         setLoading(false);
